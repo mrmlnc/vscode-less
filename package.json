@@ -25,18 +25,10 @@
     "Languages"
   ],
   "activationEvents": [
-    "onCommand:less.test",
     "onLanguage:less"
   ],
   "main": "./out/client.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "less.test",
-        "title": "Test"
-      }
-    ]
-  },
+  "contributes": {},
   "devDependencies": {
     "vscode": "^1.0.0",
     "typescript": "^2.0.3",
