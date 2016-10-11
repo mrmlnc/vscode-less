@@ -1,0 +1,55 @@
+{
+  "name": "vscode-less",
+  "displayName": "Less IntelliSense",
+  "description": "Advanced autocompletion and refactoring support for Less",
+  "version": "0.1.0",
+  "preview": true,
+  "publisher": "mrmlnc",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.5.0"
+  },
+  "icon": "icon.png",
+  "homepage": "https://github.com/mrmlnc/vscode-less/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrmlnc/vscode-less"
+  },
+  "keywords": [
+    "less",
+    "autocompletion",
+    "intellisense",
+    "refactor"
+  ],
+  "categories": [
+    "Languages"
+  ],
+  "activationEvents": [
+    "onCommand:less.test",
+    "onLanguage:less"
+  ],
+  "main": "./out/client.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "less.test",
+        "title": "Test"
+      }
+    ]
+  },
+  "devDependencies": {
+    "vscode": "^1.0.0",
+    "typescript": "^2.0.3",
+    "tslint": "^3.15.1",
+    "mocha": "^3.1.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "2.5.0",
+    "vscode-languageserver": "2.5.1",
+    "vscode-css-languageservice": "1.1.0",
+    "postcss-less": "0.15.0"
+  },
+  "scripts": {
+    "test": "tslint src/**/*.ts && tsc && mocha out/**/*.spec.js"
+  }
+}

@@ -1,0 +1,18 @@
+@one: 1;
+@two: {
+	content: "test";
+};
+
+.mixin(@zeroWithDefaultValue: 0, @zero) {
+	content: "";
+}
+
+.a > .b {
+	@three: 2;
+
+	.c(@four: 4, @five: 5) {
+		@test: '';
+
+		content: @four + @five;
+	}
+}
