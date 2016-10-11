@@ -64,3 +64,44 @@ export enum NodeType {
 	ViewPort,
 	Document
 }
+
+export interface INode {
+	type: NodeType;
+	offset: number;
+	length: number;
+	end: number;
+
+	identifier: INode;
+	parent: INode;
+	children: INode[];
+
+	accept: (node: any) => boolean;
+	getText: () => string;
+	getChildren: () => INode[];
+	getChild: (index: number) => INode;
+	getParent: () => INode;
+	findParent: (type: NodeType) => INode;
+	getSelectors: () => INode;
+	getParameters: () => INode;
+	getName: () => string;
+	getValue: () => INode;
+	getDefaultValue: () => INode;
+}
+
+export interface IVariable {
+	name: string;
+	value: string;
+	offset: number;
+	isMixinArgument?: boolean;
+}
+
+export interface IMixin {
+	name: string;
+	arguments: IVariable[];
+	offset: number;
+}
+
+export interface IOccurrence {
+	variables: IVariable[];
+	mixins: IMixin[];
+}

@@ -57,8 +57,8 @@ describe('Parser - processing of the opened file', () => {
 		document = TextDocument.create('./fixtures/parser.less', 'less', 1, data.toString());
 	});
 
-	it('Variables - position: 82', () => {
-		const vars = parser(document, 82).variables;
+	it('Variables - position: 92', () => {
+		const vars = parser(document, 92).variables;
 
 		assert.equal(vars.length, 4);
 
@@ -68,8 +68,8 @@ describe('Parser - processing of the opened file', () => {
 		assert.equal(vars[3].name, 'one');
 	});
 
-	it('Mixins - position: 82', () => {
-		const mixins = parser(document, 82).mixins;
+	it('Mixins - position: 92', () => {
+		const mixins = parser(document, 92).mixins;
 
 		assert.equal(mixins.length, 2);
 
@@ -77,8 +77,8 @@ describe('Parser - processing of the opened file', () => {
 		assert.equal(mixins[1].name, '.a > .b .c');
 	});
 
-	it('Variables - position: 160', () => {
-		const vars = parser(document, 160).variables;
+	it('Variables - position: 176', () => {
+		const vars = parser(document, 176).variables;
 
 		assert.equal(vars.length, 6);
 
@@ -90,8 +90,8 @@ describe('Parser - processing of the opened file', () => {
 		assert.equal(vars[5].name, 'one');
 	});
 
-	it('Mixins - position: 160', () => {
-		const mixins = parser(document, 160).mixins;
+	it('Mixins - position: 176', () => {
+		const mixins = parser(document, 176).mixins;
 
 		assert.equal(mixins.length, 2);
 
