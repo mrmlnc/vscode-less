@@ -52,7 +52,7 @@ export function makeMixin(node: INode): IMixin {
 		const defaultValueNode = child.getDefaultValue();
 
 		return <IVariable>{
-			name: child.getName().slice(1),
+			name: child.getName(),
 			value: defaultValueNode ? defaultValueNode.getText() : null,
 			offset: child.offset,
 			isMixinArgument: true

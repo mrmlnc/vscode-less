@@ -19,8 +19,8 @@ describe('Mixin', () => {
 		assert.equal(mixin.offset, 10);
 		assert.equal(mixin.arguments.length, 2);
 
-		assert.equal(mixin.arguments[0].name, 'one');
-		assert.equal(mixin.arguments[1].name, 'two');
+		assert.equal(mixin.arguments[0].name, '@one');
+		assert.equal(mixin.arguments[1].name, '@two');
 	});
 
 });

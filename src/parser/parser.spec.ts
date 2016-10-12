@@ -15,7 +15,7 @@ describe('Parser', () => {
 		// Variables
 		assert.equal(symbols.variables.length, 1);
 
-		assert.equal(symbols.variables[0].name, 'name');
+		assert.equal(symbols.variables[0].name, '@name');
 		assert.equal(symbols.variables[0].value, '"value"');
 		assert.equal(symbols.variables[0].offset, 0);
 
@@ -26,11 +26,11 @@ describe('Parser', () => {
 		assert.equal(symbols.mixins[0].arguments.length, 2);
 		assert.equal(symbols.mixins[0].offset, 16);
 
-		assert.equal(symbols.mixins[0].arguments[0].name, 'a');
+		assert.equal(symbols.mixins[0].arguments[0].name, '@a');
 		assert.equal(symbols.mixins[0].arguments[0].value, '1');
 		assert.equal(symbols.mixins[0].arguments[0].isMixinArgument, true);
 
-		assert.equal(symbols.mixins[0].arguments[1].name, 'b');
+		assert.equal(symbols.mixins[0].arguments[1].name, '@b');
 		assert.equal(symbols.mixins[0].arguments[1].value, null);
 		assert.equal(symbols.mixins[0].arguments[1].isMixinArgument, true);
 
@@ -45,15 +45,15 @@ describe('Parser', () => {
 		// Variables
 		assert.equal(symbols.variables.length, 3);
 
-		assert.equal(symbols.variables[0].name, 'b');
+		assert.equal(symbols.variables[0].name, '@b');
 		assert.equal(symbols.variables[0].value, null);
 		assert.equal(symbols.variables[0].offset, 30);
 
-		assert.equal(symbols.variables[1].name, 'a');
+		assert.equal(symbols.variables[1].name, '@a');
 		assert.equal(symbols.variables[1].value, '1');
 		assert.equal(symbols.variables[1].offset, 23);
 
-		assert.equal(symbols.variables[2].name, 'name');
+		assert.equal(symbols.variables[2].name, '@name');
 		assert.equal(symbols.variables[2].value, '"value"');
 		assert.equal(symbols.variables[2].offset, 0);
 
@@ -64,11 +64,11 @@ describe('Parser', () => {
 		assert.equal(symbols.mixins[0].arguments.length, 2);
 		assert.equal(symbols.mixins[0].offset, 16);
 
-		assert.equal(symbols.mixins[0].arguments[0].name, 'a');
+		assert.equal(symbols.mixins[0].arguments[0].name, '@a');
 		assert.equal(symbols.mixins[0].arguments[0].value, '1');
 		assert.equal(symbols.mixins[0].arguments[0].isMixinArgument, true);
 
-		assert.equal(symbols.mixins[0].arguments[1].name, 'b');
+		assert.equal(symbols.mixins[0].arguments[1].name, '@b');
 		assert.equal(symbols.mixins[0].arguments[1].value, null);
 		assert.equal(symbols.mixins[0].arguments[1].isMixinArgument, true);
 
