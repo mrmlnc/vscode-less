@@ -92,7 +92,7 @@ export function parse(document: TextDocument, posOffset: number = null, cache: I
 		}
 
 		if (symbols.imports.length === 0) {
-			return Promise.resolve([symbols]);
+			return Promise.resolve(symbols);
 		} else {
 			return Promise.all(symbols.imports.map((filepath) => {
 				return statFile(filepath).then((stat) => {
@@ -111,7 +111,7 @@ export function parse(document: TextDocument, posOffset: number = null, cache: I
 					});
 				});
 			})).then((result) => {
-				return result.concat(symbols);
+				return result.concat([symbols]);
 			});
 		}
 	}
