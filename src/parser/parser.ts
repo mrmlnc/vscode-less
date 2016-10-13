@@ -7,10 +7,10 @@ import { TextDocument, Files } from 'vscode-languageserver';
 import { getLESSLanguageService } from 'vscode-css-languageservice';
 
 import { INode } from '../types/nodes';
-import { ISymbols, IVariable } from '../types/common';
+import { ISymbols, IVariable, IParse, IParsedDocument } from '../types/common';
 import { ICache } from '../providers/cache';
 
-import { findSymbols, findSymbolsAtOffset } from './symbols';
+import { findSymbols, findSymbolsAtOffset, getNodeAtOffset } from './symbols';
 
 // Less Language Service
 const ls = getLESSLanguageService();
@@ -64,7 +64,7 @@ function statFile(filepath: string): Promise<fs.Stats> {
  * @param {number} [offset=null]
  * @returns {ISymbols}
  */
-export function parseDocument(document: TextDocument, offset: number = null): ISymbols {
+export function parseDocument(document: TextDocument, offset: number = null): IParsedDocument {
 	const ast = <INode>ls.parseStylesheet(document);
 	const symbols = findSymbols(ast);
 
@@ -85,7 +85,10 @@ export function parseDocument(document: TextDocument, offset: number = null): IS
 			});
 	}
 
-	return symbols;
+	return {
+		symbols,
+		ast: offset ? ast : null
+	};
 }
 
 /**
@@ -97,15 +100,19 @@ export function parseDocument(document: TextDocument, offset: number = null): IS
  * @param {ICache} cache
  * @returns {Promise<ISymbols[]>}
  */
-export function parse(document: TextDocument, posOffset: number = null, cache: ICache): Promise<ISymbols[]> {
+export function parse(document: TextDocument, posOffset: number = null, cache: ICache): Promise<IParse> {
+	let hoverNode: INode = null;
+
 	function recurse(accum: ISymbols[], next: TextDocument, offset: number): any {
 		const fsUri = Files.uriToFilePath(next.uri);
 		const root = path.dirname(fsUri || next.uri);
 
-		const symbols = parseDocument(next, offset);
+		const { ast, symbols } = parseDocument(next, offset);
 
 		if (offset === null) {
 			cache.set(next.uri, symbols);
+		} else {
+			hoverNode = getNodeAtOffset(ast, posOffset);
 		}
 
 		if (symbols.imports.length === 0) {
@@ -117,7 +124,6 @@ export function parse(document: TextDocument, posOffset: number = null, cache: I
 
 					const cached = cache.get(filepath);
 					if (cached && cached.ctime === stat.ctime) {
-						console.log('cached: ' + filepath);
 						return cached;
 					}
 
@@ -134,6 +140,9 @@ export function parse(document: TextDocument, posOffset: number = null, cache: I
 	}
 
 	return recurse([], document, posOffset).then((result) => {
-		return Array.isArray(result) ? result : [result];
+		return <IParse>{
+			symbols: Array.isArray(result) ? result : [result],
+			hoverNode
+		};
 	});
 }

@@ -1,5 +1,7 @@
 'use strict';
 
+import { INode } from './nodes';
+
 export interface IVariable {
 	name: string;
 	value: string;
@@ -18,4 +20,14 @@ export interface ISymbols {
 	mixins: IMixin[];
 	imports: string[];
 	document?: string;
+}
+
+export interface IParsedDocument {
+	symbols: ISymbols;
+	ast: INode;
+}
+
+export interface IParse {
+	symbols: ISymbols[];
+	hoverNode: INode;
 }

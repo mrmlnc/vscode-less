@@ -12,9 +12,12 @@ import {
 	Files
 } from 'vscode-languageserver';
 
-import { getCacheStorage } from './providers/cache';
 import { parse } from './parser/parser';
+import { getCurrentWord } from './utils/string';
+
+import { getCacheStorage } from './providers/cache';
 import { doCompletion } from './providers/completion';
+import { doHover } from './providers/hover';
 
 
 // Cache Storage
@@ -22,15 +25,6 @@ let cache = getCacheStorage();
 
 // Common variables
 let workspaceRoot: string;
-
-function getCurrentWord(document: TextDocument, offset: number) {
-	let i = offset - 1;
-	let text = document.getText();
-	while (i >= 0 && ' \t\n\r":{[()]},'.indexOf(text.charAt(i)) === -1) {
-		i--;
-	}
-	return text.substring(i + 1, offset);
-}
 
 // Create a connection for the server
 const connection: IConnection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
@@ -64,26 +58,38 @@ connection.onInitialize((params: InitializeParams): InitializeResult => {
 				resolveProvider: false,
 				triggerCharacters: ['.', '#', '@']
 			},
+			hoverProvider: true
 		}
 	};
 });
 
 connection.onCompletion((textDocumentPosition) => {
 	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
+	const text = document.getText();
 	const offset = document.offsetAt(textDocumentPosition.position);
 
 	const currentUri = Files.uriToFilePath(document.uri);
-	const currentWord = getCurrentWord(document, offset);
+	const currentWord = getCurrentWord(text, offset);
 
-	return parse(document, offset, cache).then((symbolsList) => {
-		return doCompletion(currentUri, currentWord, symbolsList);
+	return parse(document, offset, cache).then((resources) => {
+		return doCompletion(currentUri, currentWord, resources.symbols);
+	}).catch(() => {
+		// silent
 	});
 });
 
-// connection.onHover((textDocumentPosition) => {
-// 	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
-// 	return provideHover(document, textDocumentPosition.position, {});
-// });
+connection.onHover((textDocumentPosition) => {
+	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
+	const offset = document.offsetAt(textDocumentPosition.position);
+
+	const currentUri = Files.uriToFilePath(document.uri);
+
+	return parse(document, offset, cache).then((resources) => {
+		return doHover(currentUri, resources.symbols, resources.hoverNode);
+	}).catch(() => {
+		// silent
+	});
+});
 
 // Listen on the connection
 connection.listen();

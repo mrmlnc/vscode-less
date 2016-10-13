@@ -32,7 +32,7 @@ function getImportFilepath(node: INode): string {
  * @param {number} posOffset
  * @returns {INode}
  */
-function getNodeAtOffset(parsedDocument: INode, posOffset: number): INode {
+export function getNodeAtOffset(parsedDocument: INode, posOffset: number): INode {
 	let candidate: INode = null;
 
 	parsedDocument.accept((node) => {

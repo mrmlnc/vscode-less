@@ -10,7 +10,7 @@ describe('Parser', () => {
 
 	it('Find symbols without offset position', () => {
 		const doc = TextDocument.create('file.less', 'less', 1, '@name: "value";\n.mixin(@a: 1, @b) {};');
-		const symbols = parseDocument(doc);
+		const {symbols} = parseDocument(doc);
 
 		// Variables
 		assert.equal(symbols.variables.length, 1);
@@ -40,7 +40,7 @@ describe('Parser', () => {
 
 	it('Find symbols with offset position', () => {
 		const doc = TextDocument.create('file.less', 'less', 1, '@name: "value";\n.mixin(@a: 1, @b) {};');
-		const symbols = parseDocument(doc, 36);
+		const {symbols} = parseDocument(doc, 36);
 
 		// Variables
 		assert.equal(symbols.variables.length, 3);

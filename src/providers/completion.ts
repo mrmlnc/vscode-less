@@ -1,23 +1,29 @@
 'use strict';
 
-import * as path from 'path';
-
 import {
 	CompletionList,
 	CompletionItemKind
 } from 'vscode-languageserver';
 
-import { ISymbols } from '../types/common';
+import { ISymbols, IMixin } from '../types/common';
 
-function getDocumentPath(currentUri: string, symbolsUri: string): string {
-	const rootUri = path.dirname(currentUri);
-	const docPath = path.relative(rootUri, symbolsUri);
+import { getDocumentPath } from '../utils/path';
 
-	if (docPath === path.basename(currentUri)) {
-		return 'current';
-	}
+/**
+ * Return Mixin ad string
+ *
+ *   * mixin NAME(ARGS) {...} [FILE]
+ *
+ * @param {IMixin} symbol
+ * @param {string} fsUri
+ * @returns {string}
+ */
+function makeMixinLabel(symbol: IMixin, fsUri: string): string {
+	const args = symbol.arguments.map((item) => {
+		return `${item.name}: ${item.value}`;
+	}).join(', ');
 
-	return docPath;
+	return `mixin ${symbol.name}(${args}) {\u2026} [${fsUri}]`;
 }
 
 export function doCompletion(currentUri: string, currentWord: string, symbolList: ISymbols[]): CompletionList {
@@ -25,21 +31,25 @@ export function doCompletion(currentUri: string, currentWord: string, symbolList
 
 	if (currentWord === '@') {
 		symbolList.forEach((symbols) => {
+			const fsUri = getDocumentPath(currentUri, symbols.document);
+
 			symbols.variables.forEach((variable) => {
 				completions.items.push({
 					label: variable.name,
 					kind: CompletionItemKind.Variable,
-					detail: variable.value + ', ' + getDocumentPath(currentUri, symbols.document)
+					detail: variable.value + ', ' + fsUri
 				});
 			});
 		});
 	} else if (currentWord === '.' || currentUri === '#') {
 		symbolList.forEach((symbols) => {
+			const fsUri = getDocumentPath(currentUri, symbols.document);
+
 			symbols.mixins.forEach((mixin) => {
 				completions.items.push({
 					label: mixin.name,
 					kind: CompletionItemKind.Function,
-					detail: getDocumentPath(currentUri, symbols.document),
+					detail: makeMixinLabel(mixin, fsUri),
 					insertText: mixin.name + '({{_}});'
 				});
 			});
