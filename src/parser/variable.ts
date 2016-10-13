@@ -25,7 +25,7 @@ function getChildByType(parent: INode, type: NodeType): INode[] {
 export function makeVariable(node: INode): IVariable {
 	return {
 		name: node.getName(),
-		value: node.getValue().getText(),
+		value: node.getValue().getText().replace(/\n/g, ' '),
 		offset: node.offset
 	};
 }
