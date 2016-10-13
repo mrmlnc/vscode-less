@@ -112,7 +112,7 @@ export function findSymbolsAtOffset(parsedDocument: INode, offset: number): ISym
 
 	node = node.getParent();
 	while (true) {
-		if (node.type === NodeType.Stylesheet) {
+		if (!node || node.type === NodeType.Stylesheet) {
 			break;
 		} else if (node.type === NodeType.MixinDeclaration) {
 			const mixin = makeMixin(node);

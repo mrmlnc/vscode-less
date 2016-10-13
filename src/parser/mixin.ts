@@ -22,11 +22,9 @@ export function getParentSelectors(node: INode): string {
 	let selectors: string[] = [];
 
 	while (true) {
-		if (node.type === NodeType.Stylesheet) {
+		if (!node || node.type === NodeType.Stylesheet) {
 			break;
-		}
-
-		if (node.type === NodeType.Ruleset) {
+		} else if (node.type === NodeType.Ruleset) {
 			const text = node.getSelectors().getText();
 			if (/&#{}/.test(text)) {
 				return null;
