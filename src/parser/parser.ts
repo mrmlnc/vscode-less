@@ -46,15 +46,16 @@ function readFile(filepath: string): Promise<string> {
  */
 function statFile(filepath: string): Promise<fs.Stats> {
 	return new Promise((resolve, reject) => {
-		fs.stat(filepath, (err, data) => {
+		fs.stat(filepath, (err, stat) => {
 			if (err) {
 				return reject(err);
 			}
 
-			resolve(data.toString());
+			resolve(stat);
 		});
 	});
 }
+
 
 /**
  * Returns all Symbols in a single document.
@@ -103,43 +104,55 @@ export function parseDocument(document: TextDocument, offset: number = null): IP
 export function parse(document: TextDocument, posOffset: number = null, cache: ICache): Promise<IParse> {
 	let hoverNode: INode = null;
 
-	function recurse(accum: ISymbols[], next: TextDocument, offset: number): any {
+	// Path of the document from the cache
+	let docPath: string;
+
+	function recurse(accum: ISymbols[], next: TextDocument, nextCtime: Date, fromCache: ISymbols, offset: number): any {
 		const fsUri = Files.uriToFilePath(next.uri);
-		const root = path.dirname(fsUri || next.uri);
+		const fsPath = (docPath || fsUri) || next.uri;
+		const fsRoot = path.dirname(fsPath);
 
-		const { ast, symbols } = parseDocument(next, offset);
+		// Get document Symbols from File or Cache
+		const { ast, symbols } = fromCache === null ? parseDocument(next, offset) : {
+			ast: null,
+			symbols: fromCache
+		};
 
-		if (offset === null) {
+		// Update cache
+		if (offset === null && !fromCache) {
+			symbols.ctime = nextCtime;
 			cache.set(next.uri, symbols);
-		} else {
+		} else if (!fromCache) {
 			hoverNode = getNodeAtOffset(ast, posOffset);
 		}
 
 		if (symbols.imports.length === 0) {
 			return Promise.resolve(symbols);
-		} else {
-			return Promise.all(symbols.imports.map((filepath) => {
-				return statFile(filepath).then((stat) => {
-					filepath = path.join(root, filepath);
-
-					const cached = cache.get(filepath);
-					if (cached && cached.ctime === stat.ctime) {
-						return cached;
-					}
-
-					return readFile(filepath).then((content) => {
-						const doc = TextDocument.create(filepath, 'less', 1, content);
-
-						return recurse(accum, doc, null);
-					});
-				});
-			})).then((result) => {
-				return result.concat(symbols);
-			});
 		}
+
+		return Promise.all(symbols.imports.map((filepath) => {
+			filepath = path.join(fsRoot, filepath);
+
+			return statFile(filepath).then((stat) => {
+				const cached = cache.get(filepath);
+
+				if (cached && cached.ctime.getTime() >= stat.ctime.getTime()) {
+					docPath = cached.document;
+					return recurse(accum, next, null, cached, null);
+				}
+
+				return readFile(filepath).then((content) => {
+					const doc = TextDocument.create(filepath, 'less', 1, content);
+
+					return recurse(accum, doc, stat.ctime, null, null);
+				});
+			});
+		})).then((result) => {
+			return accum.concat(...result, symbols);
+		});
 	}
 
-	return recurse([], document, posOffset).then((result) => {
+	return recurse([], document, null, null, posOffset).then((result) => {
 		return <IParse>{
 			symbols: Array.isArray(result) ? result : [result],
 			hoverNode

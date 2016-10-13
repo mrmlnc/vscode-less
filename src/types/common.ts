@@ -20,6 +20,7 @@ export interface ISymbols {
 	mixins: IMixin[];
 	imports: string[];
 	document?: string;
+	ctime?: Date;
 }
 
 export interface IParsedDocument {

@@ -3,7 +3,7 @@
 import { ISymbols } from '../types/common';
 
 export interface ICache {
-	get: (uri: string) => any;
+	get: (uri: string) => ISymbols;
 	set: (uri: string, symbols: ISymbols) => void;
 	drop: (uri: string) => void;
 	dispose: () => void;
