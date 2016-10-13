@@ -17,5 +17,5 @@ export function getDocumentPath(currentUri: string, symbolsUri: string): string 
 		return 'current';
 	}
 
-	return docPath;
+	return docPath.replace(/\\/g, '/');
 }
