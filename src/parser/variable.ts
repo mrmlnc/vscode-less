@@ -47,5 +47,12 @@ export function makeSetVariable(node: INode): IVariable[] {
 		return [];
 	}
 
-	return variableNodes.map(makeVariable);
+	const variables: IVariable[] = [];
+	for (let i = 0; i < variableNodes.length; i++) {
+		if (variableNodes[i].getValue()) {
+			variables.push(makeVariable(variableNodes[i]));
+		}
+	}
+
+	return variables;
 }

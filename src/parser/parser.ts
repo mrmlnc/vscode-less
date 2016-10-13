@@ -100,7 +100,7 @@ export function parse(document: TextDocument, posOffset: number = null, cache: I
 
 					const cached = cache.get(filepath);
 					if (cached && cached.ctime === stat.ctime) {
-						console.log('cached');
+						console.log('cached: ' + filepath);
 						return cached;
 					}
 
@@ -111,10 +111,12 @@ export function parse(document: TextDocument, posOffset: number = null, cache: I
 					});
 				});
 			})).then((result) => {
-				return result.concat([symbols]);
+				return result.concat(symbols);
 			});
 		}
 	}
 
-	return recurse([], document, posOffset);
+	return recurse([], document, posOffset).then((result) => {
+		return Array.isArray(result) ? result : [result];
+	});
 }

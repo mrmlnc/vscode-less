@@ -71,7 +71,9 @@ export function findSymbols(parsedDocument: INode): ISymbols {
 				imports.push(filepath);
 			}
 		} else if (node.type === NodeType.VariableDeclaration && node.getParent().type === NodeType.Stylesheet) {
-			variables.push(makeVariable(node));
+			if (node.getValue()) {
+				variables.push(makeVariable(node));
+			}
 		} else if (node.type === NodeType.MixinDeclaration) {
 			mixins.push(makeMixin(node));
 		}
