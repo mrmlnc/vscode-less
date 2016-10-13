@@ -56,6 +56,14 @@ function statFile(filepath: string): Promise<fs.Stats> {
 	});
 }
 
+/**
+ * Returns all Symbols in a single document.
+ *
+ * @export
+ * @param {TextDocument} document
+ * @param {number} [offset=null]
+ * @returns {ISymbols}
+ */
 export function parseDocument(document: TextDocument, offset: number = null): ISymbols {
 	const ast = <INode>ls.parseStylesheet(document);
 	const symbols = findSymbols(ast);
@@ -80,6 +88,15 @@ export function parseDocument(document: TextDocument, offset: number = null): IS
 	return symbols;
 }
 
+/**
+ * Returns all Symbols in a single document, but with finding in the imported files.
+ *
+ * @export
+ * @param {TextDocument} document
+ * @param {number} [posOffset=null]
+ * @param {ICache} cache
+ * @returns {Promise<ISymbols[]>}
+ */
 export function parse(document: TextDocument, posOffset: number = null, cache: ICache): Promise<ISymbols[]> {
 	function recurse(accum: ISymbols[], next: TextDocument, offset: number): any {
 		const fsUri = Files.uriToFilePath(next.uri);
