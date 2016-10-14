@@ -37,6 +37,7 @@ console.error = connection.console.error.bind(connection.console);
 // supports full document sync only
 const documents: TextDocuments = new TextDocuments();
 
+// Drop cache for closed files
 documents.onDidClose((event) => {
 	const fsPath = Files.uriToFilePath(event.document.uri);
 
@@ -108,6 +109,11 @@ connection.onHover((textDocumentPosition) => {
 			connection.window.showErrorMessage(err);
 		}
 	});
+});
+
+// Dispose cache
+connection.onShutdown(() => {
+	cache.dispose();
 });
 
 // Listen on the connection
