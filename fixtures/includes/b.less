@@ -1,7 +1,13 @@
-@b: 2;
+@import "../mixins/c";
+
+@b: "test value";
 
 .b {
 	.c(@one: 1, @two) {
 		content: @one + @two;
 	}
+}
+
+.test {
+	content: @d;
 }

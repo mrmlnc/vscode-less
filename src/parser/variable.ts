@@ -1,7 +1,7 @@
 'use strict';
 
 import { INode, NodeType } from '../types/nodes';
-import { IVariable } from '../types/common';
+import { IVariable } from '../types/symbols';
 
 /**
  * Returns the child Node of the specified type.
@@ -22,11 +22,19 @@ function getChildByType(parent: INode, type: NodeType): INode[] {
  * @param {INode} node
  * @returns {IVariable}
  */
-export function makeVariable(node: INode): IVariable {
+export function makeVariable(node: INode, fromMixin: string = null): IVariable {
+	const valueNode: INode = fromMixin ? node.getDefaultValue() : node.getValue();
+
+	let value: string = null;
+	if (valueNode) {
+		value = valueNode.getText().replace(/\n/g, ' ').replace(/\s\s+/g, ' ');
+	}
+
 	return {
 		name: node.getName(),
-		value: node.getValue().getText().replace(/\n/g, ' '),
-		offset: node.offset
+		value,
+		offset: node.offset,
+		mixin: fromMixin
 	};
 }
 
@@ -37,12 +45,12 @@ export function makeVariable(node: INode): IVariable {
  * @returns {IVariable}
  */
 export function makeSetVariable(node: INode): IVariable[] {
-	const children: INode[] = getChildByType(node, NodeType.Declarations);
-	if (!children) {
+	const childs: INode[] = getChildByType(node, NodeType.Declarations);
+	if (!childs) {
 		return [];
 	}
 
-	const variableNodes = getChildByType(children[0], NodeType.VariableDeclaration);
+	const variableNodes = getChildByType(childs[0], NodeType.VariableDeclaration);
 	if (!variableNodes) {
 		return [];
 	}

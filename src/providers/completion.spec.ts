@@ -2,7 +2,8 @@
 
 import * as assert from 'assert';
 
-import { ISymbols } from '../types/common';
+import { ISymbols } from '../types/symbols';
+import { ISettings } from '../types/settings';
 import { doCompletion } from './completion';
 
 describe('Completion', () => {
@@ -10,34 +11,46 @@ describe('Completion', () => {
 	it('doCompletion', () => {
 		const symbolsList: ISymbols[] = [{
 			document: 'test.less',
-			variables: [{
-				name: '@test',
-				value: null,
-				offset: 0
-			}],
-			mixins: [{
-				name: '.test',
-				arguments: [],
-				offset: 0
-			}],
+			variables: [
+				{
+					name: '@test',
+					value: null,
+					offset: 0,
+					mixin: null
+				},
+				{
+					name: '@skip',
+					value: '{ content: ""; }',
+					offset: 0,
+					mixin: null
+				}
+			],
+			mixins: [
+				{
+					name: '.test',
+					parameters: [],
+					parent: ''
+				},
+				{
+					name: '.skip',
+					parameters: [],
+					parent: '.a &'
+				}
+			],
 			imports: []
 		}];
 
-		const variables = doCompletion('test.less', '@', symbolsList);
+		const settings = <ISettings>{
+			directoryFilter: [],
+			scannerDepth: 20,
+			showErrors: false,
+			suggestMixins: true,
+			suggestVariables: true
+		};
 
-		assert.equal(variables.items.length, 1);
-
-		assert.equal(variables.items[0].label, '@test');
-		assert.equal(variables.items[0].kind, 6);
-		assert.equal(variables.items[0].detail, 'null, current');
-
-		const mixins = doCompletion('test.less', '.', symbolsList);
-
-		assert.equal(mixins.items.length, 1);
-
-		assert.equal(mixins.items[0].label, '.test');
-		assert.equal(mixins.items[0].kind, 3);
-		assert.equal(mixins.items[0].detail, 'mixin .test() {…} [current]');
+		assert.equal(doCompletion('test.less', '@', symbolsList, settings).items.length, 2);
+		assert.equal(doCompletion('test.less', '@{', symbolsList, settings).items.length, 1);
+		assert.equal(doCompletion('test.less', '.', symbolsList, settings).items.length, 1);
 	});
 
 });

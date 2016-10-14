@@ -6,9 +6,10 @@ import {
 } from 'vscode-languageserver';
 
 import { INode, NodeType } from '../types/nodes';
-import { ISymbols, IVariable, IMixin } from '../types/common';
+import { ISymbols, IVariable, IMixin } from '../types/symbols';
 
 import { getDocumentPath } from '../utils/path';
+import { getCurrentDocumentImports } from '../utils/document';
 
 /**
  * Returns the parent Node of the specified type.
@@ -35,13 +36,18 @@ function getParentNodeByType(node: INode, type: NodeType): INode {
  * Returns a colored (marked) line for Variable.
  *
  * @param {IVariable} symbol
- * @param {string} fsUri
+ * @param {string} fsPath
+ * @param {string} suffix
  * @returns {MarkedString}
  */
-function makeVariableAsMarkedString(symbol: IVariable, fsUri: string): MarkedString {
+function makeVariableAsMarkedString(symbol: IVariable, fsPath: string, suffix: string): MarkedString {
+	if (fsPath !== 'current') {
+		suffix = `\n@import "${fsPath}"` + suffix;
+	}
+
 	return {
 		language: 'less',
-		value: `${symbol.name}: ${symbol.value} [${fsUri}]`
+		value: `${symbol.name}: ${symbol.value}` + suffix
 	};
 }
 
@@ -49,22 +55,27 @@ function makeVariableAsMarkedString(symbol: IVariable, fsUri: string): MarkedStr
  * Returns a colored (marked) line for Mixin.
  *
  * @param {IMixin} symbol
- * @param {string} fsUri
+ * @param {string} fsPath
+ * @param {string} suffix
  * @returns {MarkedString}
  */
-function makeMixinAsMarkedString(symbol: IMixin, fsUri: string): MarkedString {
-	const args = symbol.arguments.map((item) => {
-		return `${item.name}: ${item.value}`;
-	}).join(', ');
+function makeMixinAsMarkedString(symbol: IMixin, fsPath: string, suffix: string): MarkedString {
+	const args = symbol.parameters.map((item) => `${item.name}: ${item.value}`).join(', ');
+	const fullName = symbol.parent ? symbol.parent + ' ' + symbol.name : symbol.name;
+
+	if (fsPath !== 'current') {
+		suffix = `\n@import "${fsPath}"` + suffix;
+	}
 
 	return {
 		language: 'less',
-		value: symbol.name + `(${args}) {\u2026} [${fsUri}]`
+		value: fullName + `(${args}) {\u2026}` + suffix
 	};
 }
 
 interface ISymbol {
-	uri: string;
+	document: string;
+	path: string;
 	info: any;
 }
 
@@ -73,20 +84,21 @@ interface ISymbol {
  *
  * @param {ISymbols[]} symbolList
  * @param {*} identifier
- * @param {string} currentUri
+ * @param {string} currentPath
  * @returns {ISymbol}
  */
-function getSymbol(symbolList: ISymbols[], identifier: any, currentUri: string): ISymbol {
+function getSymbol(symbolList: ISymbols[], identifier: any, currentPath: string): ISymbol {
 	for (let i = 0; i < symbolList.length; i++) {
 		const symbols = symbolList[i];
 		const symbolsByType = symbols[identifier.type];
 
-		const fsUri = getDocumentPath(currentUri, symbols.document);
+		const fsPath = getDocumentPath(currentPath, symbols.document);
 
 		for (let i = 0; i < symbolsByType.length; i++) {
 			if (symbolsByType[i].name === identifier.name) {
 				return {
-					uri: fsUri,
+					document: symbols.document,
+					path: fsPath,
 					info: symbolsByType[i]
 				};
 			}
@@ -96,7 +108,7 @@ function getSymbol(symbolList: ISymbols[], identifier: any, currentUri: string):
 	return null;
 }
 
-export function doHover(currentUri: string, symbolList: ISymbols[], hoverNode: INode): Hover {
+export function doHover(currentPath: string, symbolsList: ISymbols[], hoverNode: INode): Hover {
 	if (!hoverNode || !hoverNode.type) {
 		return;
 	}
@@ -121,17 +133,29 @@ export function doHover(currentUri: string, symbolList: ISymbols[], hoverNode: I
 		return;
 	}
 
-	const symbol = getSymbol(symbolList, identifier, currentUri);
+	// Imports for current document
+	const documentImports = getCurrentDocumentImports(symbolsList, currentPath);
+
+	// All symbols
+	const symbol = getSymbol(symbolsList, identifier, currentPath);
+
+	// Content for Hover popup
 	let contents: MarkedString = '';
 	if (symbol) {
+		// Add 'implicitly' suffix if the file imported implicitly
+		let contentSuffix = '';
+		if (symbol.path !== 'current' && documentImports.indexOf(symbol.document) === -1) {
+			contentSuffix = ' (implicitly)';
+		}
+
 		if (identifier.type === 'variables') {
-			contents = makeVariableAsMarkedString(symbol.info, symbol.uri);
+			contents = makeVariableAsMarkedString(symbol.info, symbol.path, contentSuffix);
 		} else {
-			contents = makeMixinAsMarkedString(symbol.info, symbol.uri);
+			contents = makeMixinAsMarkedString(symbol.info, symbol.path, contentSuffix);
 		}
 	}
 
 	return {
-		contents
+		contents: contents
 	};
 }

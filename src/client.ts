@@ -2,7 +2,7 @@
 
 import * as path from 'path';
 
-import { ExtensionContext } from 'vscode';
+import * as vscode from 'vscode';
 import {
 	LanguageClient,
 	LanguageClientOptions,
@@ -10,7 +10,7 @@ import {
 	TransportKind
 } from 'vscode-languageclient';
 
-export function activate(context: ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
 	const serverModule = path.join(__dirname, 'server.js');
 
 	const debugOptions = {
@@ -34,7 +34,9 @@ export function activate(context: ExtensionContext) {
 		synchronize: {
 			configurationSection: ['less']
 		},
-		initializationOptions: {}
+		initializationOptions: {
+			settings: vscode.workspace.getConfiguration('less')
+		}
 	};
 
 	const client = new LanguageClient('less-intellisense', 'Less Language Server', serverOptions, clientOptions);

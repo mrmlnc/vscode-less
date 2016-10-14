@@ -79,7 +79,7 @@ export interface INode {
 	getDefaultValue: () => INode;
 	getText: () => string;
 	getParameters: () => INode;
-	getIdentifier: () => any;
+	getIdentifier: () => INode;
 
 	getParent: () => INode;
 	getChildren: () => INode[];

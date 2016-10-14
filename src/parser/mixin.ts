@@ -1,7 +1,9 @@
 'use strict';
 
 import { INode, NodeType } from '../types/nodes';
-import { IVariable, IMixin } from '../types/common';
+import { IVariable, IMixin } from '../types/symbols';
+
+import { makeVariable } from './variable';
 
 /**
  * Calculation chain of selectors to mixins.
@@ -25,12 +27,7 @@ export function getParentSelectors(node: INode): string {
 		if (!node || node.type === NodeType.Stylesheet) {
 			break;
 		} else if (node.type === NodeType.Ruleset) {
-			const text = node.getSelectors().getText();
-			if (/&#{}/.test(text)) {
-				return null;
-			}
-
-			selectors.unshift(text);
+			selectors.unshift(node.getSelectors().getText());
 		}
 
 		node = node.getParent();
@@ -46,26 +43,18 @@ export function getParentSelectors(node: INode): string {
  * @returns {IMixin}
  */
 export function makeMixin(node: INode): IMixin {
-	const args: IVariable[] = node.getParameters().getChildren().map((child) => {
-		const defaultValueNode = child.getDefaultValue();
+	const name = node.getName();
+	let params: IVariable[] = [];
 
-		return <IVariable>{
-			name: child.getName(),
-			value: defaultValueNode ? defaultValueNode.getText() : null,
-			offset: child.offset,
-			isMixinArgument: true
-		};
+	node.getParameters().getChildren().forEach((child) => {
+		if (child.getName()) {
+			params.push(makeVariable(child, name));
+		}
 	});
-
-	let name = node.getName();
-	const parentSelectors = getParentSelectors(node);
-	if (parentSelectors) {
-		name = parentSelectors + ' ' + name;
-	}
 
 	return {
 		name,
-		arguments: args,
-		offset: node.offset
+		parameters: params,
+		parent: getParentSelectors(node)
 	};
 }

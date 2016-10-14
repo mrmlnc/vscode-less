@@ -6,29 +6,29 @@ export interface IVariable {
 	name: string;
 	value: string;
 	offset: number;
-	isMixinArgument?: boolean;
+	mixin: string;
 }
 
 export interface IMixin {
 	name: string;
-	arguments: IVariable[];
-	offset: number;
+	parameters: IVariable[];
+	parent: string;
 }
 
 export interface ISymbols {
+	document?: string;
+	ctime?: Date;
 	variables: IVariable[];
 	mixins: IMixin[];
 	imports: string[];
-	document?: string;
-	ctime?: Date;
 }
 
-export interface IParsedDocument {
-	symbols: ISymbols;
+export interface IDocument {
 	ast: INode;
+	symbols: ISymbols;
 }
 
-export interface IParse {
+export interface IDocumentCollection {
 	symbols: ISymbols[];
-	hoverNode: INode;
+	node: INode;
 }

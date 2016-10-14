@@ -1,6 +1,6 @@
 'use strict';
 
-import { ISymbols } from '../types/common';
+import { ISymbols } from '../types/symbols';
 
 export interface ICache {
 	get: (uri: string) => ISymbols;

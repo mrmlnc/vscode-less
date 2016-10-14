@@ -9,7 +9,7 @@
  */
 export function getCurrentWord(text: string, offset: number) {
 	let i = offset - 1;
-	while (i >= 0 && ' \t\n\r":{[()]},'.indexOf(text.charAt(i)) === -1) {
+	while (i >= 0 && ' \t\n\r":[()]},'.indexOf(text.charAt(i)) === -1) {
 		i--;
 	}
 	return text.substring(i + 1, offset);

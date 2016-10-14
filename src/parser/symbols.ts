@@ -1,7 +1,7 @@
 'use strict';
 
 import { INode, NodeType } from '../types/nodes';
-import { IVariable, IMixin, ISymbols } from '../types/common';
+import { IVariable, IMixin, ISymbols } from '../types/symbols';
 
 import { makeVariable, makeSetVariable } from './variable';
 import { makeMixin } from './mixin';
@@ -119,7 +119,7 @@ export function findSymbolsAtOffset(parsedDocument: INode, offset: number): ISym
 
 			mixins.push(mixin);
 			variables.push(
-				...mixin.arguments,
+				...mixin.parameters,
 				...makeSetVariable(node)
 			);
 		} else if (node.type === NodeType.Ruleset) {

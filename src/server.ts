@@ -12,19 +12,20 @@ import {
 	Files
 } from 'vscode-languageserver';
 
-import { parse } from './parser/parser';
-import { getCurrentWord } from './utils/string';
+import { ISettings } from './types/settings';
 
-import { getCacheStorage } from './providers/cache';
+import { getCurrentWord } from './utils/string';
+import { getCacheStorage } from './services/cache';
+import { doScanner } from './services/scanner';
 import { doCompletion } from './providers/completion';
 import { doHover } from './providers/hover';
-
 
 // Cache Storage
 let cache = getCacheStorage();
 
 // Common variables
 let workspaceRoot: string;
+let settings: ISettings;
 
 // Create a connection for the server
 const connection: IConnection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
@@ -37,9 +38,9 @@ console.error = connection.console.error.bind(connection.console);
 const documents: TextDocuments = new TextDocuments();
 
 documents.onDidClose((event) => {
-	const fsUri = Files.uriToFilePath(event.document.uri);
+	const fsPath = Files.uriToFilePath(event.document.uri);
 
-	cache.drop(fsUri);
+	cache.drop(fsPath);
 });
 
 // Make the text document manager listen on the connection
@@ -48,33 +49,45 @@ documents.listen(connection);
 
 // After the server has started the client sends an initilize request. The server receives
 // in the passed params the rootPath of the workspace plus the client capabilites
-connection.onInitialize((params: InitializeParams): InitializeResult => {
+connection.onInitialize((params: InitializeParams): Promise<InitializeResult> => {
 	workspaceRoot = params.rootPath;
+	settings = params.initializationOptions.settings;
 
-	return <InitializeResult>{
-		capabilities: {
-			textDocumentSync: documents.syncKind,
-			completionProvider: {
-				resolveProvider: false,
-				triggerCharacters: ['.', '#', '@']
-			},
-			hoverProvider: true
+	return doScanner(workspaceRoot, cache, settings).then(() => {
+		return <InitializeResult>{
+			capabilities: {
+				textDocumentSync: documents.syncKind,
+				completionProvider: {
+					resolveProvider: false,
+					triggerCharacters: ['.', '#', '@', '{']
+				},
+				hoverProvider: true
+			}
+		};
+	}).catch((err) => {
+		if (settings.showErrors) {
+			connection.window.showErrorMessage(err);
 		}
-	};
+	});
 });
 
 connection.onCompletion((textDocumentPosition) => {
 	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
-	const text = document.getText();
 	const offset = document.offsetAt(textDocumentPosition.position);
 
-	const currentUri = Files.uriToFilePath(document.uri);
-	const currentWord = getCurrentWord(text, offset);
+	const currentPath = Files.uriToFilePath(document.uri);
+	const currentWord = getCurrentWord(document.getText(), offset);
 
-	return parse(document, offset, cache).then((resources) => {
-		return doCompletion(currentUri, currentWord, resources.symbols);
-	}).catch(() => {
-		// silent
+	return doScanner(workspaceRoot, cache, settings, {
+		textDocument: document,
+		path: currentPath,
+		offset
+	}).then((collection) => {
+		return doCompletion(currentPath, currentWord, collection.symbols, settings);
+	}).catch((err) => {
+		if (settings.showErrors) {
+			connection.window.showErrorMessage(err);
+		}
 	});
 });
 
@@ -82,12 +95,18 @@ connection.onHover((textDocumentPosition) => {
 	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
 	const offset = document.offsetAt(textDocumentPosition.position);
 
-	const currentUri = Files.uriToFilePath(document.uri);
+	const currentPath = Files.uriToFilePath(document.uri);
 
-	return parse(document, offset, cache).then((resources) => {
-		return doHover(currentUri, resources.symbols, resources.hoverNode);
-	}).catch(() => {
-		// silent
+	return doScanner(workspaceRoot, cache, settings, {
+		textDocument: document,
+		path: currentPath,
+		offset
+	}).then((collection) => {
+		return doHover(currentPath, collection.symbols, collection.node);
+	}).catch((err) => {
+		if (settings.showErrors) {
+			connection.window.showErrorMessage(err);
+		}
 	});
 });
 

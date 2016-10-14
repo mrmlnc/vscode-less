@@ -28,18 +28,51 @@
     "onLanguage:less"
   ],
   "main": "./out/client.js",
-  "contributes": {},
+  "contributes": {
+    "configuration": {
+      "properties": {
+        "less.scannerDepth": {
+          "type": "number",
+          "default": 30,
+          "description": "Number of max directory nesting to be scanned."
+        },
+        "less.directoryFilter": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["!.git", "!**/node_modules", "!**/bower_components"],
+          "description": "The list of patterns of directories that are excluded from scanning."
+        },
+        "less.showErrors": {
+          "type": "boolean",
+          "default": false,
+          "description": "Controls the display of errors."
+        },
+        "less.suggestVariables": {
+          "type": "boolean",
+          "default": true,
+          "description": "Controls the display of Variables."
+        },
+        "less.suggestMixins": {
+          "type": "boolean",
+          "default": true,
+          "description": "Controls the display of Mixins."
+        }
+      }
+    }
+  },
   "devDependencies": {
     "vscode": "^1.0.0",
     "typescript": "^2.0.3",
     "tslint": "^3.15.1",
-    "mocha": "^3.1.0"
+    "mocha": "^3.1.2"
   },
   "dependencies": {
     "vscode-languageclient": "2.6.0",
     "vscode-languageserver": "2.6.0",
     "vscode-css-languageservice": "1.1.0",
-    "postcss-less": "0.15.0"
+    "readdirp": "2.1.0"
   },
   "scripts": {
     "test": "tslint src/**/*.ts && tsc && mocha out/**/*.spec.js"
