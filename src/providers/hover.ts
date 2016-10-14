@@ -8,8 +8,7 @@ import {
 import { INode, NodeType } from '../types/nodes';
 import { ISymbols, IVariable, IMixin } from '../types/symbols';
 
-import { getDocumentPath } from '../utils/path';
-import { getCurrentDocumentImports } from '../utils/document';
+import { getCurrentDocumentImports, getDocumentPath } from '../utils/document';
 
 /**
  * Returns the parent Node of the specified type.

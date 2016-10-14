@@ -8,8 +8,7 @@ import {
 import { ISymbols, IVariable, IMixin } from '../types/symbols';
 import { ISettings } from '../types/settings';
 
-import { getDocumentPath } from '../utils/path';
-import { getCurrentDocumentImports } from '../utils/document';
+import { getCurrentDocumentImports, getDocumentPath } from '../utils/document';
 
 /**
  * Return Variable value.
