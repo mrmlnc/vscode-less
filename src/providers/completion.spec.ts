@@ -48,8 +48,13 @@ describe('Completion', () => {
 			suggestVariables: true
 		};
 
+		// Should show all suggestions
 		assert.equal(doCompletion('test.less', '@', symbolsList, settings).items.length, 2);
+
+		// Should discard Variables with Ruleset in values
 		assert.equal(doCompletion('test.less', '@{', symbolsList, settings).items.length, 1);
+
+		// Should discard Mixins with dynamic selectors
 		assert.equal(doCompletion('test.less', '.', symbolsList, settings).items.length, 1);
 	});
 
