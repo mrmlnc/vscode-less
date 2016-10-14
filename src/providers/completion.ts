@@ -42,6 +42,16 @@ function makeMixinDocumentation(symbol: IMixin, fsPath: string): string {
 	return `${symbol.name}(${args}) {\u2026}`;
 }
 
+/**
+ * Do Completion :)
+ *
+ * @export
+ * @param {string} currentPath
+ * @param {string} currentWord
+ * @param {ISymbols[]} symbolsList
+ * @param {ISettings} settings
+ * @returns {CompletionList}
+ */
 export function doCompletion(currentPath: string, currentWord: string, symbolsList: ISymbols[], settings: ISettings): CompletionList {
 	const completions = CompletionList.create([], false);
 	const documentImports = getCurrentDocumentImports(symbolsList, currentPath);

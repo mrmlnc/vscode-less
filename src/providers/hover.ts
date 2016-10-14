@@ -107,6 +107,15 @@ function getSymbol(symbolList: ISymbols[], identifier: any, currentPath: string)
 	return null;
 }
 
+/**
+ * Do Hover :)
+ *
+ * @export
+ * @param {string} currentPath
+ * @param {ISymbols[]} symbolsList
+ * @param {INode} hoverNode
+ * @returns {Hover}
+ */
 export function doHover(currentPath: string, symbolsList: ISymbols[], hoverNode: INode): Hover {
 	if (!hoverNode || !hoverNode.type) {
 		return;
