@@ -3,16 +3,8 @@
 import * as assert from 'assert';
 
 import { TextDocument } from 'vscode-languageserver';
-import { getLESSLanguageService } from 'vscode-css-languageservice';
 
 import { parseDocument } from './parser';
-
-const ls = getLESSLanguageService();
-
-ls.configure({
-	lint: false,
-	validate: false
-});
 
 function parseText(text: string[]): TextDocument {
 	return TextDocument.create('test.less', 'less', 1, text.join('\n'));
