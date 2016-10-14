@@ -4,7 +4,9 @@
 
 > **Disclaimer**
 >
-> This is a preview release that may contain errors. Please read this file.
+> This is a preview release that may contain errors. This plugin works fine on my machine (SSD) with 500+ Bootstrap files (3.3.7).
+>
+> Please read this README file.
 
 ## Install
 
