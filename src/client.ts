@@ -39,7 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	};
 
-	const client = new LanguageClient('less-intellisense', 'Less Language Server', serverOptions, clientOptions);
+	const client = new LanguageClient('less-intellisense', 'Less IntelliSense', serverOptions, clientOptions);
 	const disposable = client.start();
 
 	context.subscriptions.push(disposable);
