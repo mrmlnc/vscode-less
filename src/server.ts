@@ -72,6 +72,11 @@ connection.onInitialize((params: InitializeParams): Promise<InitializeResult> =>
 	});
 });
 
+// Update settings
+connection.onDidChangeConfiguration((params) => {
+	settings = params.settings.less;
+});
+
 connection.onCompletion((textDocumentPosition) => {
 	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
 
