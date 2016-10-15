@@ -46,7 +46,8 @@ export function doCompletion(currentPath: string, currentWord: string, symbolsLi
 			const fsPath = getDocumentPath(currentPath, symbols.document);
 
 			symbols.variables.forEach((variable) => {
-				// Drop Variable if its value is RuleSet
+				// Drop Variable if its value is RuleSet in interpolation
+				// .test-@{|cursor}
 				if (isInterpolationVariable && variable.value && variable.value.indexOf('{') !== -1) {
 					return;
 				}
@@ -83,7 +84,10 @@ export function doCompletion(currentPath: string, currentWord: string, symbolsLi
 				}
 
 				// Make full name
-				const fullName = mixin.parent ? mixin.parent + ' ' + mixin.name : mixin.name;
+				let fullName = mixin.name;
+				if (mixin.parent) {
+					fullName = mixin.parent + ' ' + fullName;
+				}
 
 				// Add 'implicitly' prefix for Path if the file imported implicitly
 				let detailPath = fsPath;
