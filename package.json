@@ -34,7 +34,7 @@
         "less.scannerDepth": {
           "type": "number",
           "default": 30,
-          "description": "Number of max directory nesting to be scanned."
+          "description": "The maximum number of nested directories to scan."
         },
         "less.directoryFilter": {
           "type": "array",
@@ -57,17 +57,17 @@
         "less.showErrors": {
           "type": "boolean",
           "default": false,
-          "description": "Controls the display of errors."
+          "description": "Allows to display errors."
         },
         "less.suggestVariables": {
           "type": "boolean",
           "default": true,
-          "description": "Controls the display of Variables."
+          "description": "Allows prompt Variables."
         },
         "less.suggestMixins": {
           "type": "boolean",
           "default": true,
-          "description": "Controls the display of Mixins."
+          "description": "Allows prompt Mixins."
         }
       }
     }

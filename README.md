@@ -46,7 +46,7 @@ Just install the plugin and use it.
   * Type: `number`
   * Default: `30`
 
-Number of max directory nesting to be scanned.
+The maximum number of nested directories to scan.
 
 **less.directoryFilter**
 
@@ -74,21 +74,21 @@ The maximum number of imported files to scan. Prevent an infinite recursion and 
   * Type: `boolean`
   * Default: `false`
 
-Controls the display of errors.
+Allows to display errors.
 
 **less.suggestVariables**
 
   * Type: `boolean`
   * Default: `true`
 
-Controls the suggest of Variables.
+Allows prompt Variables.
 
 **less.suggestMixins**
 
   * Type: `boolean`
   * Default: `true`
 
-Controls the suggest of Mixins.
+Allows prompt Mixins.
 
 ## What's next?
 
