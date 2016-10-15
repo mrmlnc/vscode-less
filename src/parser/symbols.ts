@@ -53,7 +53,10 @@ export function findSymbols(parsedDocument: INode): ISymbols {
 				variables.push(makeVariable(node));
 			}
 		} else if (node.type === NodeType.MixinDeclaration) {
-			mixins.push(makeMixin(node));
+			// Skip Mixins in Mixins
+			if (!getParentNodeByType(node, NodeType.MixinDeclaration)) {
+				mixins.push(makeMixin(node));
+			}
 		}
 
 		return true;
@@ -88,7 +91,6 @@ export function findSymbolsAtOffset(parsedDocument: INode, offset: number): ISym
 		};
 	}
 
-	node = node.getParent();
 	while (true) {
 		if (!node || node.type === NodeType.Stylesheet) {
 			break;
