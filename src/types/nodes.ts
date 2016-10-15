@@ -83,5 +83,6 @@ export interface INode {
 
 	getParent: () => INode;
 	getChildren: () => INode[];
+	getChild: (index: number) => INode;
 	getSelectors: () => INode;
 }

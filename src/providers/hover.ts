@@ -146,6 +146,6 @@ export function doHover(currentPath: string, symbolsList: ISymbols[], hoverNode:
 	}
 
 	return {
-		contents: contents
+		contents
 	};
 }

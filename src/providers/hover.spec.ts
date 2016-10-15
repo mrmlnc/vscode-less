@@ -2,64 +2,29 @@
 
 import * as assert from 'assert';
 
-import { NodeType } from '../types/nodes';
+import { TextDocument } from 'vscode-languageserver';
+import { getLESSLanguageService } from 'vscode-css-languageservice';
+
+import { INode } from '../types/nodes';
 import { ISymbols } from '../types/symbols';
 
 import { doHover } from './hover';
 
+const ls = getLESSLanguageService();
+
+ls.configure({
+	lint: false,
+	validate: false
+});
+
+function parseText(text: string[]): INode {
+	const doc = TextDocument.create('test.less', 'less', 1, text.join('\n'));
+	return <INode>ls.parseStylesheet(doc);
+}
+
 interface IHover {
 	language: string;
 	value: string;
-}
-
-interface IValueNode {
-	getText: () => string;
-}
-
-interface IVariableNode {
-	offset: number;
-	getName: () => string;
-	getValue: () => IValueNode;
-	getDefaultValue: () => IValueNode;
-}
-
-export function mockupVariableNode(name: string, value: string, offset: number): IVariableNode {
-	return {
-		offset,
-		getName: () => name,
-		getValue: () => ({
-			getText: () => value
-		}),
-		getDefaultValue: () => ({
-			getText: () => value
-		})
-	};
-}
-
-interface IChildrenNode {
-	getChildren: () => IVariableNode[];
-}
-
-interface IMixinNode {
-	offset: number;
-	getName: () => string;
-	getParameters: () => IChildrenNode;
-	getParent: () => {
-		type: NodeType;
-	};
-}
-
-export function mockupMixinNode(name: string, parameters: IVariableNode[], offset: number): IMixinNode {
-	return {
-		offset,
-		getName: () => name,
-		getParameters: () => ({
-			getChildren: () => parameters
-		}),
-		getParent: () => ({
-			type: NodeType.Stylesheet
-		})
-	};
 }
 
 describe('Hover', () => {
@@ -69,38 +34,36 @@ describe('Hover', () => {
 			document: 'test.less',
 			variables: [{
 				name: '@test',
-				value: null,
+				value: '1',
 				offset: 0,
 				mixin: null
 			}],
 			mixins: [{
 				name: '.test',
 				parameters: [],
-				parent: ''
+				parent: null
 			}],
 			imports: []
 		}];
 
-		const variableNode = <any>mockupVariableNode('@test', null, 0);
-		variableNode.type = NodeType.VariableName;
+		const ast = parseText([
+			'@test: 1;',
+			'.test() {}'
+		]);
 
-		const variable = doHover('test.less', symbolsList, variableNode);
+		// Stylesheet -> VariableDeclaration -> Variable
+		const variableNode = ast.getChild(0).getChild(0);
+		const variableHover: IHover = <any>doHover('test.less', symbolsList, variableNode).contents;
 
-		assert.equal((<IHover>variable.contents).language, 'less');
-		assert.equal((<IHover>variable.contents).value, '@test: null');
+		assert.equal(variableHover.language, 'less');
+		assert.equal(variableHover.value, '@test: 1');
 
-		const mixinNode = <any>mockupMixinNode('.test', [variableNode], 0);
-		mixinNode.type = NodeType.MixinDeclaration;
+		// Stylesheet -> MixinDeclaration -> Identifier
+		const mixinNode = ast.getChild(1).getChild(0);
+		const mixinHover: IHover = <any>doHover('test.less', symbolsList, mixinNode).contents;
 
-		const identifierNode = <any>{
-			type: NodeType.Identifier,
-			getParent: () => mixinNode
-		};
-
-		const mixin = doHover('test.less', symbolsList, identifierNode);
-
-		assert.equal((<IHover>mixin.contents).language, 'less');
-		assert.equal((<IHover>mixin.contents).value, '.test() {…}');
+		assert.equal(mixinHover.language, 'less');
+		assert.equal(mixinHover.value, '.test() {…}');
 	});
 
 });
