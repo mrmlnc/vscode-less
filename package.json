@@ -42,7 +42,17 @@
             "type": "string"
           },
           "default": ["!.git", "!**/node_modules", "!**/bower_components"],
-          "description": "The list of patterns of directories that are excluded from scanning."
+          "description": "List of Glob-patterns for directories that are excluded when scanning."
+        },
+        "less.scanImportedFiles": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allows scan imported files."
+        },
+        "less.scanImportedFilesDepth": {
+          "type": "number",
+          "default": 50,
+          "description": "The maximum number of imported files to scan."
         },
         "less.showErrors": {
           "type": "boolean",

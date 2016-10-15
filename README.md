@@ -53,7 +53,21 @@ Number of max directory nesting to be scanned.
   * Type: `string[]`
   * Default: `["!.git", "!**/node_modules", "!**/bower_components"]`
 
-The list of patterns of directories that are excluded from scanning.
+List of Glob-patterns for directories that are excluded when scanning.
+
+**less.scanImportedFiles**
+
+  * Type: `boolean`
+  * Default: `true`
+
+Allows scan imported files.
+
+**less.scanImportedFilesDepth**
+
+  * Type: `number`
+  * Default: `50`
+
+The maximum number of imported files to scan. Prevent an infinite recursion and very deep `@import`.
 
 **less.showErrors**
 
