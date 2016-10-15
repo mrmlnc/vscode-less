@@ -16,6 +16,22 @@ export function getCurrentWord(text: string, offset: number) {
 }
 
 /**
+ * Returns text before specified position.
+ *
+ * @export
+ * @param {string} text
+ * @param {number} offset
+ * @returns
+ */
+export function getTextBeforePosition(text: string, offset: number) {
+	let i = offset - 1;
+	while ('\n\r'.indexOf(text.charAt(i)) === -1) {
+		i--;
+	}
+	return text.substring(i + 1, offset + 1);
+}
+
+/**
  * Returns text after specified position.
  *
  * @export
@@ -23,7 +39,7 @@ export function getCurrentWord(text: string, offset: number) {
  * @param {number} offset
  * @returns
  */
-export function getTextAfterCurrentWord(text: string, offset: number) {
+export function getTextAfterPosition(text: string, offset: number) {
 	let i = offset + 1;
 	while ('\n\r'.indexOf(text.charAt(i)) === -1) {
 		i++;

@@ -51,3 +51,25 @@ export function getParentNodeByType(node: INode, type: NodeType): INode {
 
 	return node;
 }
+
+/**
+ * Returns True, if node has Parent with specified type(s).
+ *
+ * @export
+ * @param {INode} node
+ * @param {NodeType[]} types
+ * @returns {boolean}
+ */
+export function hasParentsByType(node: INode, types: NodeType[]): boolean {
+	node = node.getParent();
+
+	while (true) {
+		if (node.type === NodeType.Stylesheet) {
+			return false;
+		} else if (types.indexOf(node.type) !== -1) {
+			return true;
+		}
+
+		node = node.getParent();
+	}
+}

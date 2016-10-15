@@ -76,7 +76,7 @@ connection.onCompletion((textDocumentPosition) => {
 	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
 	const offset = document.offsetAt(textDocumentPosition.position);
 
-	const currentWord = getCurrentWord(document.getText(), offset);
+	const word = getCurrentWord(document.getText(), offset);
 
 	// Information about current Document
 	const doc = {
@@ -89,7 +89,7 @@ connection.onCompletion((textDocumentPosition) => {
 		// Cache invalidation
 		invalidateCacheStorage(cache, collection.symbols);
 
-		return doCompletion(doc.path, currentWord, collection.symbols, settings);
+		return doCompletion(doc.path, word, collection.symbols, settings);
 	}).catch((err) => {
 		if (settings.showErrors) {
 			connection.window.showErrorMessage(err);

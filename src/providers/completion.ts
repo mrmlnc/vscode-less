@@ -28,22 +28,22 @@ function makeMixinDocumentation(symbol: IMixin, fsPath: string): string {
  * Do Completion :)
  *
  * @export
- * @param {string} currentPath
- * @param {string} currentWord
+ * @param {string} docPath
+ * @param {string} word
  * @param {ISymbols[]} symbolsList
  * @param {ISettings} settings
  * @returns {CompletionList}
  */
-export function doCompletion(currentPath: string, currentWord: string, symbolsList: ISymbols[], settings: ISettings): CompletionList {
+export function doCompletion(docPath: string, word: string, symbolsList: ISymbols[], settings: ISettings): CompletionList {
 	const completions = CompletionList.create([], false);
-	const documentImports = getCurrentDocumentImports(symbolsList, currentPath);
+	const documentImports = getCurrentDocumentImports(symbolsList, docPath);
 
 	// is .@{NAME}-test { ... }
-	const isInterpolationVariable = currentWord.endsWith('@{');
+	const isInterpolationVariable = word.endsWith('@{');
 
-	if (settings.suggestVariables && (currentWord === '@' || isInterpolationVariable)) {
+	if (settings.suggestVariables && (word === '@' || isInterpolationVariable)) {
 		symbolsList.forEach((symbols) => {
-			const fsPath = getDocumentPath(currentPath, symbols.document);
+			const fsPath = getDocumentPath(docPath, symbols.document);
 
 			symbols.variables.forEach((variable) => {
 				// Drop Variable if its value is RuleSet in interpolation
@@ -54,7 +54,7 @@ export function doCompletion(currentPath: string, currentWord: string, symbolsLi
 
 				// Add 'implicitly' prefix for Path if the file imported implicitly
 				let detailPath = fsPath;
-				if (symbols.document !== currentPath && documentImports.indexOf(symbols.document) === -1) {
+				if (symbols.document !== docPath && documentImports.indexOf(symbols.document) === -1) {
 					detailPath = `(implicitly) ${detailPath}`;
 				}
 
@@ -73,9 +73,9 @@ export function doCompletion(currentPath: string, currentWord: string, symbolsLi
 				});
 			});
 		});
-	} else if (settings.suggestMixins && (currentWord === '.' || currentPath === '#')) {
+	} else if (settings.suggestMixins && (word === '.' || word === '#')) {
 		symbolsList.forEach((symbols) => {
-			const fsPath = getDocumentPath(currentPath, symbols.document);
+			const fsPath = getDocumentPath(docPath, symbols.document);
 
 			symbols.mixins.forEach((mixin) => {
 				// Drop Mixin if his parents are calculated dynamically
@@ -91,7 +91,7 @@ export function doCompletion(currentPath: string, currentWord: string, symbolsLi
 
 				// Add 'implicitly' prefix for Path if the file imported implicitly
 				let detailPath = fsPath;
-				if (symbols.document !== currentPath && documentImports.indexOf(symbols.document) === -1) {
+				if (symbols.document !== docPath && documentImports.indexOf(symbols.document) === -1) {
 					detailPath = `(implicitly) ${detailPath}`;
 				}
 
@@ -99,7 +99,7 @@ export function doCompletion(currentPath: string, currentWord: string, symbolsLi
 					label: fullName,
 					kind: CompletionItemKind.Function,
 					detail: detailPath,
-					documentation: makeMixinDocumentation(mixin, currentPath),
+					documentation: makeMixinDocumentation(mixin, docPath),
 					insertText: fullName + '({{_}});'
 				});
 			});

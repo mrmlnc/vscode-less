@@ -93,12 +93,12 @@ function getSymbol(symbolList: ISymbols[], identifier: any, currentPath: string)
  * Do Hover :)
  *
  * @export
- * @param {string} currentPath
+ * @param {string} docPath
  * @param {ISymbols[]} symbolsList
  * @param {INode} hoverNode
  * @returns {Hover}
  */
-export function doHover(currentPath: string, symbolsList: ISymbols[], hoverNode: INode): Hover {
+export function doHover(docPath: string, symbolsList: ISymbols[], hoverNode: INode): Hover {
 	if (!hoverNode || !hoverNode.type) {
 		return;
 	}
@@ -124,10 +124,10 @@ export function doHover(currentPath: string, symbolsList: ISymbols[], hoverNode:
 	}
 
 	// Imports for current document
-	const documentImports = getCurrentDocumentImports(symbolsList, currentPath);
+	const documentImports = getCurrentDocumentImports(symbolsList, docPath);
 
 	// All symbols
-	const symbol = getSymbol(symbolsList, identifier, currentPath);
+	const symbol = getSymbol(symbolsList, identifier, docPath);
 
 	// Content for Hover popup
 	let contents: MarkedString = '';
