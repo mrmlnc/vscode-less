@@ -15,10 +15,9 @@ import { getLimitedString } from '../utils/string';
  * Return Mixin as string.
  *
  * @param {IMixin} symbol
- * @param {string} fsPath
  * @returns {string}
  */
-function makeMixinDocumentation(symbol: IMixin, fsPath: string): string {
+function makeMixinDocumentation(symbol: IMixin): string {
 	const args = symbol.parameters.map((item) => `${item.name}: ${item.value}`).join(', ');
 
 	return `${symbol.name}(${args}) {\u2026}`;
@@ -58,7 +57,7 @@ export function doCompletion(docPath: string, word: string, symbolsList: ISymbol
 					detailPath = `(implicitly) ${detailPath}`;
 				}
 
-				// Add 'argument from MIXIN_NAME' suffix if Variable from Mixin
+				// Add 'argument from MIXIN_NAME' suffix if Variable is Mixin argument
 				let detailText = detailPath;
 				if (variable.mixin) {
 					detailText = `argument from ${variable.mixin}, ${detailText}`;
@@ -99,7 +98,7 @@ export function doCompletion(docPath: string, word: string, symbolsList: ISymbol
 					label: fullName,
 					kind: CompletionItemKind.Function,
 					detail: detailPath,
-					documentation: makeMixinDocumentation(mixin, docPath),
+					documentation: makeMixinDocumentation(mixin),
 					insertText: fullName + '({{_}});'
 				});
 			});
