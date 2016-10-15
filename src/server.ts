@@ -76,15 +76,17 @@ connection.onCompletion((textDocumentPosition) => {
 	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
 	const offset = document.offsetAt(textDocumentPosition.position);
 
-	const currentPath = Files.uriToFilePath(document.uri);
 	const currentWord = getCurrentWord(document.getText(), offset);
 
-	return doScanner(workspaceRoot, cache, settings, {
+	// Information about current Document
+	const doc = {
 		textDocument: document,
-		path: currentPath,
+		path: Files.uriToFilePath(document.uri),
 		offset
-	}).then((collection) => {
-		return doCompletion(currentPath, currentWord, collection.symbols, settings);
+	};
+
+	return doScanner(workspaceRoot, cache, settings, doc).then((collection) => {
+		return doCompletion(doc.path, currentWord, collection.symbols, settings);
 	}).catch((err) => {
 		if (settings.showErrors) {
 			connection.window.showErrorMessage(err);
@@ -94,16 +96,16 @@ connection.onCompletion((textDocumentPosition) => {
 
 connection.onHover((textDocumentPosition) => {
 	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
-	const offset = document.offsetAt(textDocumentPosition.position);
 
-	const currentPath = Files.uriToFilePath(document.uri);
-
-	return doScanner(workspaceRoot, cache, settings, {
+	// Information about current Document
+	const doc = {
 		textDocument: document,
-		path: currentPath,
-		offset
-	}).then((collection) => {
-		return doHover(currentPath, collection.symbols, collection.node);
+		path: Files.uriToFilePath(document.uri),
+		offset: document.offsetAt(textDocumentPosition.position)
+	};
+
+	return doScanner(workspaceRoot, cache, settings, doc).then((collection) => {
+		return doHover(doc.path, collection.symbols, collection.node);
 	}).catch((err) => {
 		if (settings.showErrors) {
 			connection.window.showErrorMessage(err);
