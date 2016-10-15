@@ -101,10 +101,7 @@ function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], document: 
 					}
 				}
 
-				// Because `less-plugin-glob`
-				if (filepath.indexOf('*') === -1) {
-					importedFiles.push(filepath);
-				}
+				importedFiles.push(filepath);
 			});
 		});
 

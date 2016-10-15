@@ -24,6 +24,9 @@ describe('Symbols', () => {
 
 	it('findSymbols', () => {
 		const ast = parseText([
+			'@import "test.css";',
+			'@import "@{variable}.less";',
+			'@import "**/*.less";',
 			'@name: "value";',
 			'.mixin(@a: 1, @b) {};'
 		]);

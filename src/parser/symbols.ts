@@ -13,9 +13,13 @@ import { makeMixin } from './mixin';
  * @returns {string}
  */
 function getImportFilepath(node: INode): string {
-	let filepath = node.getText().replace(/@import\s.*["'](.*)["']/, '$1');
+	let filepath = node.getText().replace(/@import.*["'](.*)["']/, '$1');
 
-	if (/css$/.test(filepath)) {
+	// Skip filepaths:
+	//   * @import "file.css";
+	//   * @import "@{variable}.less";
+	//   * @import "**/*.less"; by `less-plugin-glob`
+	if (/css$|@{|\*/g.test(filepath)) {
 		return null;
 	}
 	if (!/less$/.test(filepath)) {
