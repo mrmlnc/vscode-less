@@ -10,27 +10,7 @@ import { ISymbols, IVariable, IMixin } from '../types/symbols';
 
 import { getCurrentDocumentImports, getDocumentPath } from '../utils/document';
 import { getLimitedString } from '../utils/string';
-
-/**
- * Returns the parent Node of the specified type.
- *
- * @param {INode} node
- * @param {NodeType} type
- * @returns {INode}
- */
-function getParentNodeByType(node: INode, type: NodeType): INode {
-	while (true) {
-		if (node.type === NodeType.Stylesheet) {
-			return null;
-		} else if (node.type === type) {
-			break;
-		}
-
-		node = node.getParent();
-	}
-
-	return node;
-}
+import { getParentNodeByType } from '../utils/ast';
 
 /**
  * Returns a colored (marked) line for Variable.

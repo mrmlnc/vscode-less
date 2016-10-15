@@ -8,7 +8,8 @@ import { getLESSLanguageService } from 'vscode-css-languageservice';
 import { INode } from '../types/nodes';
 import { IDocument, IVariable } from '../types/symbols';
 
-import { findSymbols, findSymbolsAtOffset, getNodeAtOffset } from '../parser/symbols';
+import { findSymbols, findSymbolsAtOffset } from '../parser/symbols';
+import { getNodeAtOffset } from '../utils/ast';
 
 // Less Language Service
 const ls = getLESSLanguageService();

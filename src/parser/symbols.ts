@@ -5,6 +5,7 @@ import { IVariable, IMixin, ISymbols } from '../types/symbols';
 
 import { makeVariable, makeSetVariable } from './variable';
 import { makeMixin } from './mixin';
+import { getNodeAtOffset, getParentNodeByType } from '../utils/ast';
 
 /**
  * Get filepath of import.
@@ -27,33 +28,6 @@ function getImportFilepath(node: INode): string {
 	}
 
 	return filepath;
-}
-
-/**
- * Get Node by offset position.
- *
- * @param {INode} parsedDocument
- * @param {number} posOffset
- * @returns {INode}
- */
-export function getNodeAtOffset(parsedDocument: INode, posOffset: number): INode {
-	let candidate: INode = null;
-
-	parsedDocument.accept((node) => {
-		if (node.offset === -1 && node.length === -1) {
-			return true;
-		} else if (node.offset <= posOffset && node.end >= posOffset) {
-			if (!candidate) {
-				candidate = node;
-			} else if (node.length <= candidate.length) {
-				candidate = node;
-			}
-			return true;
-		}
-		return false;
-	});
-
-	return candidate;
 }
 
 /**
