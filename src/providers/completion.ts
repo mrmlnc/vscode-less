@@ -5,29 +5,11 @@ import {
 	CompletionItemKind
 } from 'vscode-languageserver';
 
-import { ISymbols, IVariable, IMixin } from '../types/symbols';
+import { ISymbols, IMixin } from '../types/symbols';
 import { ISettings } from '../types/settings';
 
 import { getCurrentDocumentImports, getDocumentPath } from '../utils/document';
-
-/**
- * Return Variable value.
- *
- * @param {IVariable} symbol
- * @param {string} fsPath
- * @returns {string}
- */
-function makeVariableDocumentation(symbol: IVariable, fsPath: string): string {
-	if (!symbol.value) {
-		return 'null';
-	}
-
-	if (symbol.value.length < 50) {
-		return symbol.value;
-	}
-
-	return symbol.value.slice(0, 50) + '\u2026';
-}
+import { getLimitedString } from '../utils/string';
 
 /**
  * Return Mixin as string.
@@ -86,7 +68,7 @@ export function doCompletion(currentPath: string, currentWord: string, symbolsLi
 					label: isInterpolationVariable ? variable.name.slice(-1) : variable.name,
 					kind: CompletionItemKind.Variable,
 					detail: detailText,
-					documentation: makeVariableDocumentation(variable, currentPath)
+					documentation: getLimitedString(variable.value)
 				});
 			});
 		});

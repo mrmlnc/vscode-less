@@ -9,6 +9,7 @@ import { INode, NodeType } from '../types/nodes';
 import { ISymbols, IVariable, IMixin } from '../types/symbols';
 
 import { getCurrentDocumentImports, getDocumentPath } from '../utils/document';
+import { getLimitedString } from '../utils/string';
 
 /**
  * Returns the parent Node of the specified type.
@@ -40,13 +41,14 @@ function getParentNodeByType(node: INode, type: NodeType): INode {
  * @returns {MarkedString}
  */
 function makeVariableAsMarkedString(symbol: IVariable, fsPath: string, suffix: string): MarkedString {
+	const value = getLimitedString(symbol.value);
 	if (fsPath !== 'current') {
 		suffix = `\n@import "${fsPath}"` + suffix;
 	}
 
 	return {
 		language: 'less',
-		value: `${symbol.name}: ${symbol.value}` + suffix
+		value: `${symbol.name}: ${value}` + suffix
 	};
 }
 

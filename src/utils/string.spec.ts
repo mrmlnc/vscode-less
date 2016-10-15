@@ -2,7 +2,7 @@
 
 import * as assert from 'assert';
 
-import { getCurrentWord, getTextAfterCurrentWord } from './string';
+import { getCurrentWord, getTextAfterCurrentWord, getLimitedString } from './string';
 
 describe('String', () => {
 
@@ -18,6 +18,13 @@ describe('String', () => {
 
 		assert.equal(getTextAfterCurrentWord(text, 5), '(@a) {}');
 		assert.equal(getTextAfterCurrentWord(text, 8), ') {}');
+	});
+
+	it('getLimitedString', () => {
+		const text = `vscode`.repeat(24);
+
+		assert.equal(getLimitedString(text).length, 141);
+		assert.equal(getLimitedString(text, false).length, 140);
 	});
 
 });
