@@ -74,16 +74,24 @@ connection.onInitialize((params: InitializeParams): Promise<InitializeResult> =>
 
 connection.onCompletion((textDocumentPosition) => {
 	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
-	const offset = document.offsetAt(textDocumentPosition.position);
 
-	const word = getCurrentWord(document.getText(), offset);
+	// Document filepath
+	const docPath = Files.uriToFilePath(document.uri);
+
+	// Skip not saved files
+	if (!docPath) {
+		return;
+	}
 
 	// Information about current Document
 	const doc = {
 		textDocument: document,
-		path: Files.uriToFilePath(document.uri),
-		offset
+		path: docPath,
+		offset: document.offsetAt(textDocumentPosition.position)
 	};
+
+	// Current word
+	const word = getCurrentWord(document.getText(), doc.offset);
 
 	return doScanner(workspaceRoot, cache, settings, doc).then((collection) => {
 		// Cache invalidation
