@@ -95,6 +95,7 @@ function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], document: 
 
 		list.forEach((item) => {
 			item.imports.forEach((filepath) => {
+				// Not include in list Symbols from parent Symbols
 				for (let i = 0; i < symbolsList.length; i++) {
 					if (symbolsList[i].document === filepath) {
 						return;
