@@ -15,7 +15,7 @@ import {
 import { ISettings } from './types/settings';
 
 import { getCurrentWord } from './utils/string';
-import { getCacheStorage } from './services/cache';
+import { getCacheStorage, invalidateCacheStorage } from './services/cache';
 import { doScanner } from './services/scanner';
 import { doCompletion } from './providers/completion';
 import { doHover } from './providers/hover';
@@ -86,6 +86,9 @@ connection.onCompletion((textDocumentPosition) => {
 	};
 
 	return doScanner(workspaceRoot, cache, settings, doc).then((collection) => {
+		// Cache invalidation
+		invalidateCacheStorage(cache, collection.symbols);
+
 		return doCompletion(doc.path, currentWord, collection.symbols, settings);
 	}).catch((err) => {
 		if (settings.showErrors) {
@@ -105,6 +108,9 @@ connection.onHover((textDocumentPosition) => {
 	};
 
 	return doScanner(workspaceRoot, cache, settings, doc).then((collection) => {
+		// Cache invalidation
+		invalidateCacheStorage(cache, collection.symbols);
+
 		return doHover(doc.path, collection.symbols, collection.node);
 	}).catch((err) => {
 		if (settings.showErrors) {
