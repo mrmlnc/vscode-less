@@ -22,76 +22,99 @@ function parseText(text: string[]): INode {
 
 describe('Symbols', () => {
 
-	it('findSymbols', () => {
+	it('findSymbols - Variables', () => {
 		const ast = parseText([
-			'@import "test.css";',
-			'@import "@{variable}.less";',
-			'@import "**/*.less";',
-			'@name: "value";',
-			'.mixin(@a: 1, @b) {};'
-		]);
-
-		const symbols = findSymbols(ast);
-
-		// Variables
-		assert.equal(symbols.variables.length, 1);
-
-		assert.equal(symbols.variables[0].name, '@name');
-		assert.equal(symbols.variables[0].value, '"value"');
-
-		// Mixins
-		assert.equal(symbols.mixins.length, 1);
-
-		assert.equal(symbols.mixins[0].name, '.mixin');
-		assert.equal(symbols.mixins[0].parameters.length, 2);
-
-		assert.equal(symbols.mixins[0].parameters[0].name, '@a');
-		assert.equal(symbols.mixins[0].parameters[0].value, '1');
-
-		assert.equal(symbols.mixins[0].parameters[1].name, '@b');
-		assert.equal(symbols.mixins[0].parameters[1].value, null);
-
-		// Imports
-		assert.equal(symbols.imports.length, 0);
-	});
-
-	it('findSymbolsAtOffset', () => {
-		const ast = parseText([
-			'@name: "value";',
+			'@a: 1;',
 			'.a {',
-			'  @a: 1;',
-			'  .mixin(@b: 1, @c) {};',
+			'  @b: 2;',
 			'}'
 		]);
 
-		const symbols = findSymbolsAtOffset(ast, 51);
+		const { variables } = findSymbols(ast);
 
-		// Variables
-		assert.equal(symbols.variables.length, 3);
+		assert.equal(variables.length, 1);
 
-		assert.equal(symbols.variables[0].name, '@b');
-		assert.equal(symbols.variables[0].value, '1');
+		assert.equal(variables[0].name, '@a');
+		assert.equal(variables[0].value, '1');
+	});
 
-		assert.equal(symbols.variables[1].name, '@c');
-		assert.equal(symbols.variables[1].value, null);
+	it('findSymbols - Mixins', () => {
+		const ast = parseText([
+			'.a() {}',
+			'.a {',
+			'  .b() {}',
+			'}',
+			'.c() {',
+			'  .d() {}',
+			'}'
+		]);
 
-		assert.equal(symbols.variables[2].name, '@a');
-		assert.equal(symbols.variables[2].value, '1');
+		const { mixins } = findSymbols(ast);
 
-		// Mixins
-		assert.equal(symbols.mixins.length, 1);
+		assert.equal(mixins.length, 3);
 
-		assert.equal(symbols.mixins[0].name, '.mixin');
-		assert.equal(symbols.mixins[0].parameters.length, 2);
+		assert.equal(mixins[0].name, '.a');
+		assert.equal(mixins[1].name, '.b');
+		assert.equal(mixins[2].name, '.c');
+	});
 
-		assert.equal(symbols.mixins[0].parameters[0].name, '@b');
-		assert.equal(symbols.mixins[0].parameters[0].value, '1');
+	it('findSymbols - Imports', () => {
+		const ast = parseText([
+			'@import "styles.less";',
+			'@import "styles.css";',
+			'@import "@{styles}.less";',
+			'@import "styles/**/*.less";'
+		]);
 
-		assert.equal(symbols.mixins[0].parameters[1].name, '@c');
-		assert.equal(symbols.mixins[0].parameters[1].value, null);
+		const { imports } = findSymbols(ast);
 
-		// Imports
-		assert.equal(symbols.imports.length, 0);
+		assert.equal(imports.length, 1);
+
+		assert.equal(imports[0], 'styles.less');
+	});
+
+	it('findSymbolsAtOffset - Variables', () => {
+		const ast = parseText([
+			'@a: 1;',
+			'.a {',
+			'  @b: 2;',
+			'}'
+		]);
+
+		const { variables } = findSymbolsAtOffset(ast, 22);
+
+		assert.equal(variables.length, 1);
+
+		assert.equal(variables[0].name, '@b');
+		assert.equal(variables[0].value, '2');
+	});
+
+	it('findSymbolsAtOffset - Mixins', () => {
+		const ast = parseText([
+			'.a() {}',
+			'.a {',
+			'  .b() {}',
+			'}',
+			'.c() {',
+			'  .d() {}',
+			'}'
+		]);
+
+		// .a() {__0__}
+		// .a {__1__
+		//   .b() {__2__}
+		// }__3__
+		// .c() {__4__
+		//   .d() {__5__}
+		// }__6__
+
+		assert.equal(findSymbolsAtOffset(ast, 6).mixins.length, 1, '__0__');
+		assert.equal(findSymbolsAtOffset(ast, 12).mixins.length, 0, '__1__');
+		assert.equal(findSymbolsAtOffset(ast, 21).mixins.length, 1, '__2__');
+		assert.equal(findSymbolsAtOffset(ast, 24).mixins.length, 0, '__3__');
+		assert.equal(findSymbolsAtOffset(ast, 31).mixins.length, 1, '__4__');
+		assert.equal(findSymbolsAtOffset(ast, 40).mixins.length, 2, '__5__');
+		assert.equal(findSymbolsAtOffset(ast, 43).mixins.length, 1, '__6__');
 	});
 
 });
