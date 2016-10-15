@@ -92,8 +92,7 @@ Allows prompt Mixins.
 
 ## What's next?
 
-  * **[important]** Support read files by `@import`.
-  * Support for `/// <reference path="file.less" />`.
+See Issues with [`feature-request`](https://github.com/mrmlnc/vscode-less/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-request) and [`next-iteration`](https://github.com/mrmlnc/vscode-less/issues?q=is%3Aissue+is%3Aopen+label%3Anext-iteration) labels.
 
 ## Questions
 
