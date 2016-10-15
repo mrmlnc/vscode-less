@@ -25,19 +25,19 @@ Just install the plugin and use it.
 
 **Intellisense for Variables**
 
-![image](https://cloud.githubusercontent.com/assets/7034281/19390685/d4237550-9231-11e6-88d3-852d47bc1ae5.png)
+![Less Intellisense VS Code](https://cloud.githubusercontent.com/assets/7034281/19413624/2d794d5a-933b-11e6-837d-66b86e873004.png)
 
 **Hover for Variables**
 
-![image](https://cloud.githubusercontent.com/assets/7034281/19390703/ec3310d8-9231-11e6-93fa-025c68a2dee7.png)
+![Less Intellisense VS Code](https://cloud.githubusercontent.com/assets/7034281/19413666/40bc63c4-933c-11e6-92c7-3f5ed0cf0d3d.png)
 
 **Intellisense for Mixins**
 
-![image](https://cloud.githubusercontent.com/assets/7034281/19390713/fa03fe2a-9231-11e6-8286-ae99669963d1.png)
+![Less Intellisense VS Code](https://cloud.githubusercontent.com/assets/7034281/19413672/795d40fe-933c-11e6-919d-de14532ee49a.png)
 
 **Hover for Mixins**
 
-![image](https://cloud.githubusercontent.com/assets/7034281/19390728/065f0138-9232-11e6-967f-497ceb57ecf9.png)
+![Less Intellisense VS Code](https://cloud.githubusercontent.com/assets/7034281/19413681/a3789ed8-933c-11e6-81ea-0fd853bb5a00.png)
 
 ## Supported settings
 
