@@ -113,10 +113,18 @@ connection.onCompletion((textDocumentPosition) => {
 connection.onHover((textDocumentPosition) => {
 	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
 
+	// Document filepath
+	const docPath = Files.uriToFilePath(document.uri);
+
+	// Skip not saved files
+	if (!docPath) {
+		return;
+	}
+
 	// Information about current Document
 	const doc = {
 		textDocument: document,
-		path: Files.uriToFilePath(document.uri),
+		path: docPath,
 		offset: document.offsetAt(textDocumentPosition.position)
 	};
 
