@@ -4,10 +4,6 @@ import { INode, NodeType } from '../types/nodes';
 
 /**
  * Get Node by offset position.
- *
- * @param {INode} parsedDocument
- * @param {number} posOffset
- * @returns {INode}
  */
 export function getNodeAtOffset(parsedDocument: INode, posOffset: number): INode {
 	let candidate: INode = null;
@@ -31,10 +27,6 @@ export function getNodeAtOffset(parsedDocument: INode, posOffset: number): INode
 
 /**
  * Returns the parent Node of the specified type.
- *
- * @param {INode} node
- * @param {NodeType} type
- * @returns {INode}
  */
 export function getParentNodeByType(node: INode, type: NodeType): INode {
 	node = node.getParent();
@@ -54,11 +46,6 @@ export function getParentNodeByType(node: INode, type: NodeType): INode {
 
 /**
  * Returns True, if node has Parent with specified type(s).
- *
- * @export
- * @param {INode} node
- * @param {NodeType[]} types
- * @returns {boolean}
  */
 export function hasParentsByType(node: INode, types: NodeType[]): boolean {
 	node = node.getParent();
@@ -76,10 +63,6 @@ export function hasParentsByType(node: INode, types: NodeType[]): boolean {
 
 /**
  * Returns the child Node of the specified type.
- *
- * @param {INode} parent
- * @param {NodeType} type
- * @returns {INode[]}
  */
 export function getChildByType(parent: INode, type: NodeType): INode[] {
 	let childs = parent.getChildren().filter((node) => node.type === type);

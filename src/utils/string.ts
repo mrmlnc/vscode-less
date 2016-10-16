@@ -2,10 +2,6 @@
 
 /**
  * Returns word by specified position.
- *
- * @param {string} text
- * @param {number} offset
- * @returns
  */
 export function getCurrentWord(text: string, offset: number) {
 	let i = offset - 1;
@@ -17,11 +13,6 @@ export function getCurrentWord(text: string, offset: number) {
 
 /**
  * Returns text before specified position.
- *
- * @export
- * @param {string} text
- * @param {number} offset
- * @returns
  */
 export function getTextBeforePosition(text: string, offset: number) {
 	let i = offset - 1;
@@ -33,11 +24,6 @@ export function getTextBeforePosition(text: string, offset: number) {
 
 /**
  * Returns text after specified position.
- *
- * @export
- * @param {string} text
- * @param {number} offset
- * @returns
  */
 export function getTextAfterPosition(text: string, offset: number) {
 	let i = offset + 1;
@@ -49,10 +35,6 @@ export function getTextAfterPosition(text: string, offset: number) {
 
 /**
  * Limit of string length.
- *
- * @export
- * @param {string} str
- * @returns {string}
  */
 export function getLimitedString(str: string, ellipsis = true): string {
 	if (!str) {

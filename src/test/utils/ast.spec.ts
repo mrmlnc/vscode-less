@@ -5,13 +5,13 @@ import * as assert from 'assert';
 import { TextDocument } from 'vscode-languageserver';
 import { getLESSLanguageService } from 'vscode-css-languageservice';
 
-import { INode, NodeType } from '../types/nodes';
+import { INode, NodeType } from '../../types/nodes';
 import {
 	getNodeAtOffset,
 	getParentNodeByType,
 	hasParentsByType,
 	getChildByType
-} from './ast';
+} from '../../utils/ast';
 
 const ls = getLESSLanguageService();
 

@@ -2,9 +2,9 @@
 
 import * as assert from 'assert';
 
-import { ISymbols } from '../types/symbols';
-import { ISettings } from '../types/settings';
-import { doCompletion } from './completion';
+import { ISymbols } from '../../types/symbols';
+import { ISettings } from '../../types/settings';
+import { doCompletion } from '../../providers/completion';
 
 describe('Completion', () => {
 

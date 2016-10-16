@@ -4,7 +4,7 @@ import * as assert from 'assert';
 
 import { TextDocument } from 'vscode-languageserver';
 
-import { parseDocument } from './parser';
+import { parseDocument } from '../../services/parser';
 
 function parseText(text: string[]): TextDocument {
 	return TextDocument.create('test.less', 'less', 1, text.join('\n'));

@@ -26,6 +26,9 @@ interface IDocument {
 	offset: number;
 }
 
+/**
+ * Returns Symbols for specified document.
+ */
 function makeSymbolsForDocument(cache: ICache, entry: IFile): Promise<ISymbols> {
 	return readFile(entry.filepath).then((data) => {
 		const doc = TextDocument.create(entry.filepath, 'less', 1, data);
@@ -38,6 +41,9 @@ function makeSymbolsForDocument(cache: ICache, entry: IFile): Promise<ISymbols> 
 	});
 }
 
+/**
+ * Create IFile interface.
+ */
 function makeEntryFile(filepath: string, ctime: Date): IFile {
 	return {
 		filepath: filepath,
@@ -46,6 +52,9 @@ function makeEntryFile(filepath: string, ctime: Date): IFile {
 	};
 }
 
+/**
+ * Returns Symbols from Imported files.
+ */
 function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], document: IDocument, settings: ISettings): Promise<ISymbols[]> {
 	let nesting = 0;
 
@@ -97,6 +106,9 @@ function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], document: 
 	});
 }
 
+/**
+ * Filter for files that are found by the scanner.
+ */
 function scannerFilter(stat: readdir.IEntry, excludePatterns: string[]): boolean {
 	if (excludePatterns && micromatch(stat.path, excludePatterns).length !== 0) {
 		return false;
@@ -109,10 +121,6 @@ function scannerFilter(stat: readdir.IEntry, excludePatterns: string[]): boolean
 
 /**
  * Returns all Symbols in the opened workspase.
- *
- * @param {string} root
- * @param {ICache} cache
- * @returns {Promise<ISymbols[]>}
  */
 export function doScanner(root: string, cache: ICache, settings: ISettings, document: IDocument = null): Promise<IDocumentCollection> {
 	let ast: INode = null;

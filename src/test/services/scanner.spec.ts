@@ -2,9 +2,9 @@
 
 import * as assert from 'assert';
 
-import { getCacheStorage } from './cache';
-import { doScanner } from './scanner';
-import { ISettings } from '../types/settings';
+import { getCacheStorage } from '../../services/cache';
+import { doScanner } from '../../services/scanner';
+import { ISettings } from '../../types/settings';
 
 const cache = getCacheStorage();
 

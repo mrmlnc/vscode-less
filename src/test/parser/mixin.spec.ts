@@ -5,8 +5,8 @@ import * as assert from 'assert';
 import { TextDocument } from 'vscode-languageserver';
 import { getLESSLanguageService } from 'vscode-css-languageservice';
 
-import { INode, NodeType } from '../types/nodes';
-import { makeMixin } from './mixin';
+import { INode, NodeType } from '../../types/nodes';
+import { makeMixin } from '../../parser/mixin';
 
 const ls = getLESSLanguageService();
 

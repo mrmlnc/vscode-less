@@ -13,9 +13,6 @@ export interface ICache {
 
 /**
  * Returns Cache storage.
- *
- * @export
- * @returns {ICache}
  */
 export function getCacheStorage(): ICache {
 	let storage: any = {};
@@ -44,10 +41,6 @@ export function getCacheStorage(): ICache {
 
 /**
  * Cache invalidation. Removes items from the Cache when they are no longer available.
- *
- * @export
- * @param {ICache} cache
- * @param {ISymbols[]} symbolsList
  */
 export function invalidateCacheStorage(cache: ICache, symbolsList: ISymbols[]): void {
 	Object.keys(cache.storage()).forEach((item) => {

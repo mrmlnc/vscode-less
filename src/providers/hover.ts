@@ -14,11 +14,6 @@ import { getParentNodeByType } from '../utils/ast';
 
 /**
  * Returns a colored (marked) line for Variable.
- *
- * @param {IVariable} symbol
- * @param {string} fsPath
- * @param {string} suffix
- * @returns {MarkedString}
  */
 function makeVariableAsMarkedString(symbol: IVariable, fsPath: string, suffix: string): MarkedString {
 	const value = getLimitedString(symbol.value);
@@ -34,11 +29,6 @@ function makeVariableAsMarkedString(symbol: IVariable, fsPath: string, suffix: s
 
 /**
  * Returns a colored (marked) line for Mixin.
- *
- * @param {IMixin} symbol
- * @param {string} fsPath
- * @param {string} suffix
- * @returns {MarkedString}
  */
 function makeMixinAsMarkedString(symbol: IMixin, fsPath: string, suffix: string): MarkedString {
 	const args = symbol.parameters.map((item) => `${item.name}: ${item.value}`).join(', ');
@@ -62,11 +52,6 @@ interface ISymbol {
 
 /**
  * Returns the Symbol, if it present in the documents.
- *
- * @param {ISymbols[]} symbolList
- * @param {*} identifier
- * @param {string} currentPath
- * @returns {ISymbol}
  */
 function getSymbol(symbolList: ISymbols[], identifier: any, currentPath: string): ISymbol {
 	for (let i = 0; i < symbolList.length; i++) {
@@ -91,12 +76,6 @@ function getSymbol(symbolList: ISymbols[], identifier: any, currentPath: string)
 
 /**
  * Do Hover :)
- *
- * @export
- * @param {string} docPath
- * @param {ISymbols[]} symbolsList
- * @param {INode} hoverNode
- * @returns {Hover}
  */
 export function doHover(docPath: string, symbolsList: ISymbols[], hoverNode: INode): Hover {
 	if (!hoverNode || !hoverNode.type) {

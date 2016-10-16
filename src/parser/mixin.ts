@@ -16,9 +16,6 @@ import { getChildByType } from '../utils/ast';
  * }
  *
  * selectors = '.a > .b'
- *
- * @param {INode} node
- * @returns {string}
  */
 export function getParentSelectors(node: INode): string {
 	node = node.getParent();
@@ -39,9 +36,6 @@ export function getParentSelectors(node: INode): string {
 
 /**
  * Returns information about Mixin Declaraion.
- *
- * @param {INode} node
- * @returns {IMixin}
  */
 export function makeMixin(node: INode): IMixin {
 	const name = node.getName();
@@ -63,11 +57,8 @@ export function makeMixin(node: INode): IMixin {
 
 /**
  * Returns information about set of Variable Declarations.
- *
- * @param {INode} node
- * @returns {IMixin[]}
  */
-export function makeSetMixin(node: INode): IMixin[] {
+export function makeMixinCollection(node: INode): IMixin[] {
 	const mixinNodes = getChildByType(node, NodeType.MixinDeclaration);
 	if (!mixinNodes) {
 		return [];

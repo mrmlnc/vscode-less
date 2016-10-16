@@ -13,9 +13,6 @@ import { getLimitedString } from '../utils/string';
 
 /**
  * Return Mixin as string.
- *
- * @param {IMixin} symbol
- * @returns {string}
  */
 function makeMixinDocumentation(symbol: IMixin): string {
 	const args = symbol.parameters.map((item) => `${item.name}: ${item.value}`).join(', ');

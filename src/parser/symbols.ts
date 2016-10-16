@@ -3,15 +3,12 @@
 import { INode, NodeType } from '../types/nodes';
 import { IVariable, IMixin, ISymbols } from '../types/symbols';
 
-import { makeVariable, makeSetVariable } from './variable';
-import { makeMixin, makeSetMixin } from './mixin';
+import { makeVariable, makeVariableCollection } from './variable';
+import { makeMixin, makeMixinCollection } from './mixin';
 import { getNodeAtOffset, getParentNodeByType } from '../utils/ast';
 
 /**
  * Get filepath of import.
- *
- * @param {INode} node
- * @returns {string}
  */
 function getImportFilepath(node: INode): string {
 	let filepath = node.getText().replace(/@import.*["'](.*)["']/, '$1');
@@ -32,10 +29,6 @@ function getImportFilepath(node: INode): string {
 
 /**
  * Get all suggestions in file.
- *
- * @export
- * @param {INode} parsedDocument
- * @returns {IOccurrence}
  */
 export function findSymbols(parsedDocument: INode): ISymbols {
 	let variables: IVariable[] = [];
@@ -71,11 +64,6 @@ export function findSymbols(parsedDocument: INode): ISymbols {
 
 /**
  * Get Symbols by offset position.
- *
- * @export
- * @param {INode} parsedDocument
- * @param {number} posOffset
- * @returns {IOccurrence}
  */
 export function findSymbolsAtOffset(parsedDocument: INode, offset: number): ISymbols {
 	let variables: IVariable[] = [];
@@ -97,11 +85,11 @@ export function findSymbolsAtOffset(parsedDocument: INode, offset: number): ISym
 		} else if (node.type === NodeType.MixinDeclaration) {
 			variables.push(
 				...makeMixin(node).parameters,
-				...makeSetVariable(node)
+				...makeVariableCollection(node)
 			);
 		} else if (node.type === NodeType.Ruleset || node.type === NodeType.Declarations) {
-			variables.push(...makeSetVariable(node));
-			mixins.push(...makeSetMixin(node));
+			variables.push(...makeVariableCollection(node));
+			mixins.push(...makeMixinCollection(node));
 		}
 
 		node = node.getParent();

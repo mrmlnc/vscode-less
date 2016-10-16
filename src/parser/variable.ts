@@ -7,9 +7,6 @@ import { getChildByType } from '../utils/ast';
 
 /**
  * Returns information about Variable Declaration.
- *
- * @param {INode} node
- * @returns {IVariable}
  */
 export function makeVariable(node: INode, fromMixin: string = null): IVariable {
 	const valueNode: INode = fromMixin ? node.getDefaultValue() : node.getValue();
@@ -29,11 +26,8 @@ export function makeVariable(node: INode, fromMixin: string = null): IVariable {
 
 /**
  * Returns information about set of Variable Declarations.
- *
- * @param {INode} node
- * @returns {IVariable}
  */
-export function makeSetVariable(node: INode): IVariable[] {
+export function makeVariableCollection(node: INode): IVariable[] {
 	const variableNodes = getChildByType(node, NodeType.VariableDeclaration);
 	if (!variableNodes) {
 		return [];

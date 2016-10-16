@@ -2,8 +2,8 @@
 
 import * as assert from 'assert';
 
-import { ISymbols } from '../types/symbols';
-import { getCacheStorage, invalidateCacheStorage } from './cache';
+import { ISymbols } from '../../types/symbols';
+import { getCacheStorage, invalidateCacheStorage } from '../../services/cache';
 
 function makeSymbols(name: string): ISymbols {
 	return {

@@ -7,7 +7,7 @@ import {
 	getTextBeforePosition,
 	getTextAfterPosition,
 	getLimitedString
-} from './string';
+} from '../../utils/string';
 
 describe('String', () => {
 

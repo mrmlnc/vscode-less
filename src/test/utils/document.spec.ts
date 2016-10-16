@@ -2,8 +2,8 @@
 
 import * as assert from 'assert';
 
-import { ISymbols } from '../types/symbols';
-import { getCurrentDocumentImports, getDocumentPath } from './document';
+import { ISymbols } from '../../types/symbols';
+import { getCurrentDocumentImports, getDocumentPath } from '../../utils/document';
 
 describe('Document', () => {
 

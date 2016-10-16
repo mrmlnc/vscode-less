@@ -5,8 +5,8 @@ import * as assert from 'assert';
 import { TextDocument } from 'vscode-languageserver';
 import { getLESSLanguageService } from 'vscode-css-languageservice';
 
-import { INode } from '../types/nodes';
-import { makeVariable } from './variable';
+import { INode } from '../../types/nodes';
+import { makeVariable } from '../../parser/variable';
 
 const ls = getLESSLanguageService();
 

@@ -5,10 +5,10 @@ import * as assert from 'assert';
 import { TextDocument } from 'vscode-languageserver';
 import { getLESSLanguageService } from 'vscode-css-languageservice';
 
-import { INode } from '../types/nodes';
-import { ISymbols } from '../types/symbols';
+import { INode } from '../../types/nodes';
+import { ISymbols } from '../../types/symbols';
 
-import { doHover } from './hover';
+import { doHover } from '../../providers/hover';
 
 const ls = getLESSLanguageService();
 

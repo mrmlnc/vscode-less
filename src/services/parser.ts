@@ -21,12 +21,6 @@ ls.configure({
 
 /**
  * Returns all Symbols in a single document.
- *
- * @export
- * @param {TextDocument} document
- * @param {string} documentDir
- * @param {number} [offset=null]
- * @returns {IDocument}
  */
 export function parseDocument(document: TextDocument, dir: string, offset: number = null): IDocument {
 	const ast = <INode>ls.parseStylesheet(document);
