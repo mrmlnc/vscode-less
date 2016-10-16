@@ -36,12 +36,12 @@
           "default": 30,
           "description": "The maximum number of nested directories to scan."
         },
-        "less.directoryFilter": {
+        "less.scannerExclude": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "default": ["!.git", "!**/node_modules", "!**/bower_components"],
+          "default": ["**/.git", "**/node_modules", "**/bower_components"],
           "description": "List of Glob-patterns for directories that are excluded when scanning."
         },
         "less.scanImportedFiles": {
@@ -82,7 +82,8 @@
     "vscode-languageclient": "2.6.0",
     "vscode-languageserver": "2.6.0",
     "vscode-css-languageservice": "1.1.0",
-    "readdirp": "2.1.0"
+    "readdir-enhanced": "1.4.4",
+    "micromatch": "2.3.11"
   },
   "scripts": {
     "test": "tslint src/**/*.ts && tsc && mocha out/**/*.spec.js",

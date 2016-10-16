@@ -1,9 +1,9 @@
 'use strict';
 
 import * as path from 'path';
-import * as fs from 'fs';
 
-import * as readdirp from 'readdirp';
+import * as readdir from 'readdir-enhanced';
+import * as micromatch from 'micromatch';
 
 import { TextDocument } from 'vscode-languageserver';
 import { ICache } from './cache';
@@ -12,41 +12,12 @@ import { IDocumentCollection, ISymbols } from '../types/symbols';
 import { ISettings } from '../types/settings';
 
 import { parseDocument } from './parser';
+import { readFile, statFile } from '../utils/fs';
 
-/**
- * Read file by specified filepath;
- *
- * @param {string} filepath
- * @returns {Promise<string>}
- */
-function readFile(filepath: string): Promise<string> {
-	return new Promise((resolve, reject) => {
-		fs.readFile(filepath, (err, data) => {
-			if (err) {
-				return reject(err);
-			}
-
-			resolve(data.toString());
-		});
-	});
-}
-
-/**
- * Read file by specified filepath;
- *
- * @param {string} filepath
- * @returns {Promise<fs.Stats>}
- */
-function statFile(filepath: string): Promise<fs.Stats> {
-	return new Promise((resolve, reject) => {
-		fs.stat(filepath, (err, stat) => {
-			if (err) {
-				return reject(err);
-			}
-
-			resolve(stat);
-		});
-	});
+interface IFile {
+	filepath: string;
+	dir: string;
+	ctime: Date;
 }
 
 interface IDocument {
@@ -55,33 +26,26 @@ interface IDocument {
 	offset: number;
 }
 
-/**
- * Returns Symbols for specified document.
- *
- * @param {ICache} cache
- * @param {readdirp.Entry} entry
- * @returns {Promise<ISymbols>}
- */
-function makeSymbolsForDocument(cache: ICache, entry: readdirp.Entry): Promise<ISymbols> {
-	return readFile(entry.fullPath).then((data) => {
-		const doc = TextDocument.create(entry.fullPath, 'less', 1, data);
-		const { symbols } = parseDocument(doc, entry.fullParentDir);
+function makeSymbolsForDocument(cache: ICache, entry: IFile): Promise<ISymbols> {
+	return readFile(entry.filepath).then((data) => {
+		const doc = TextDocument.create(entry.filepath, 'less', 1, data);
+		const { symbols } = parseDocument(doc, entry.dir);
 
-		symbols.ctime = entry.stat.ctime;
-		cache.set(entry.fullPath, symbols);
+		symbols.ctime = entry.ctime;
+		cache.set(entry.filepath, symbols);
 
 		return symbols;
 	});
 }
 
-/**
- * Returns Symbols from Imported files.
- *
- * @param {ICache} cache
- * @param {ISymbols[]} symbolsList
- * @param {ICurrentDocument} document
- * @returns {Promise<ISymbols[]>}
- */
+function makeEntryFile(filepath: string, ctime: Date): IFile {
+	return {
+		filepath: filepath,
+		dir: path.dirname(filepath),
+		ctime
+	};
+}
+
 function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], document: IDocument, settings: ISettings): Promise<ISymbols[]> {
 	let nesting = 0;
 
@@ -117,11 +81,7 @@ function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], document: 
 			}
 
 			return statFile(filepath).then((stat) => {
-				const entry: readdirp.Entry = <any>{
-					fullParentDir: path.dirname(filepath),
-					fullPath: filepath,
-					stat
-				};
+				const entry = makeEntryFile(filepath, stat.ctime);
 
 				return makeSymbolsForDocument(cache, entry);
 			});
@@ -132,27 +92,31 @@ function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], document: 
 		});
 	}
 
-	return recurse([], symbolsList);
+	return recurse([], symbolsList).catch((err) => {
+		console.log(err);
+	});
+}
+
+function scannerFilter(stat: readdir.IEntry, excludePatterns: string[]): boolean {
+	if (excludePatterns && micromatch(stat.path, excludePatterns).length !== 0) {
+		return false;
+	} else if (stat.isFile()) {
+		return stat.path.slice(-4) === 'less';
+	}
+
+	return true;
 }
 
 /**
  * Returns all Symbols in the opened workspase.
  *
- * @export
  * @param {string} root
  * @param {ICache} cache
  * @returns {Promise<ISymbols[]>}
  */
 export function doScanner(root: string, cache: ICache, settings: ISettings, document: IDocument = null): Promise<IDocumentCollection> {
-	const options = {
-		root,
-		fileFilter: '*.less',
-		directoryFilter: settings.directoryFilter.length === 0 ? null : settings.directoryFilter,
-		depth: settings.scannerDepth
-	};
-
 	let ast: INode = null;
-	let listOfPromises = [];
+	const listOfPromises = [];
 
 	if (document) {
 		const dir = path.dirname(document.path);
@@ -165,48 +129,71 @@ export function doScanner(root: string, cache: ICache, settings: ISettings, docu
 		listOfPromises.push(resource.symbols);
 	}
 
+	// Expand **/name to  **/name + **/name/** like VS Code
+	const excludePatterns = settings.scannerExclude;
+	if (settings.scannerExclude) {
+		settings.scannerExclude.forEach((pattern) => {
+			if (/^\*\*\/([\w\.-]+)\/?$/.test(pattern)) {
+				excludePatterns.push(pattern + '/**');
+			}
+		});
+	}
+
 	return new Promise((resolve, reject) => {
-		readdirp(options)
-			.on('data', (entry: readdirp.Entry) => {
-				// Skip current Document
-				if (document && document.path === entry.fullPath) {
-					return;
-				}
+		const stream = readdir.readdirStreamStat(root, {
+			basePath: path.resolve(root),
+			filter: (stat) => scannerFilter(stat, excludePatterns),
+			deep: settings.scannerDepth
+		});
 
-				// Return Cache if it exists and not outdated
-				const cached = cache.get(entry.fullPath);
-				if (cached && cached.ctime.getTime() >= entry.stat.ctime.getTime()) {
-					listOfPromises.push(cached);
-					return;
-				}
+		stream.on('data', () => {
+			// silence
+		});
 
-				listOfPromises.push(makeSymbolsForDocument(cache, entry));
-			})
-			.on('error', (err) => {
+		stream.on('file', (stat: readdir.IEntry) => {
+			const entry = makeEntryFile(stat.path, stat.ctime);
+
+			// Skip current Document
+			if (document && document.path === entry.filepath) {
+				return;
+			}
+
+			// Return Cache if it exists and not outdated
+			const cached = cache.get(entry.filepath);
+			if (cached && cached.ctime.getTime() >= entry.ctime.getTime()) {
+				listOfPromises.push(cached);
+				return;
+			}
+
+			listOfPromises.push(makeSymbolsForDocument(cache, entry));
+		});
+
+		stream.on('error', (err) => {
+			if (settings.showErrors) {
+				reject(err);
+			}
+		});
+
+		stream.on('end', async () => {
+			let projectSymbols: ISymbols[] = [];
+			let importedSymbols: ISymbols[] = [];
+
+			try {
+				projectSymbols = await Promise.all(listOfPromises);
+
+				if (settings.scanImportedFiles) {
+					importedSymbols = await scannerImportedFiles(cache, projectSymbols, document, settings);
+				}
+			} catch (err) {
 				if (settings.showErrors) {
 					reject(err);
 				}
-			})
-			.on('end', async () => {
-				let projectSymbols: ISymbols[] = [];
-				let importedSymbols: ISymbols[] = [];
+			}
 
-				try {
-					projectSymbols = await Promise.all(listOfPromises);
-
-					if (settings.scanImportedFiles) {
-						importedSymbols = await scannerImportedFiles(cache, projectSymbols, document, settings);
-					}
-				} catch (err) {
-					if (settings.showErrors) {
-						reject(err);
-					}
-				}
-
-				return resolve(<IDocumentCollection>{
-					node: ast,
-					symbols: projectSymbols.concat(importedSymbols)
-				});
+			return resolve(<IDocumentCollection>{
+				node: ast,
+				symbols: projectSymbols.concat(importedSymbols)
 			});
+		});
 	});
 }

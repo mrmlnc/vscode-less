@@ -13,7 +13,7 @@ describe('Scanner', () => {
 	it('Scan', () => {
 		const options = <ISettings>{
 			scannerDepth: 10,
-			directoryFilter: []
+			scannerExclude: []
 		};
 
 		return doScanner('./fixtures', cache, options).then((result) => {
@@ -24,7 +24,7 @@ describe('Scanner', () => {
 	it('Scan without Imported files', () => {
 		const options = <ISettings>{
 			scannerDepth: 10,
-			directoryFilter: ['!**/includes', '!**/mixins']
+			scannerExclude: ['**/includes', '**/mixins']
 		};
 
 		return doScanner('./fixtures', cache, options).then((result) => {
@@ -35,7 +35,7 @@ describe('Scanner', () => {
 	it('Scan with Imported files', () => {
 		const options = <ISettings>{
 			scannerDepth: 10,
-			directoryFilter: ['!**/includes', '!**/mixins'],
+			scannerExclude: ['**/includes', '**/mixins'],
 			scanImportedFiles: true
 		};
 

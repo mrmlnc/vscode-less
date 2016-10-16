@@ -3,7 +3,7 @@
 export interface ISettings {
 	// Scanner
 	scannerDepth: number;
-	directoryFilter: string[];
+	scannerExclude: string[];
 	scanImportedFiles: boolean;
 	scanImportedFilesDepth: number;
 

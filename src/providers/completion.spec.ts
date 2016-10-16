@@ -43,7 +43,7 @@ describe('Completion', () => {
 		}];
 
 		const settings = <ISettings>{
-			directoryFilter: [],
+			scannerExclude: [],
 			scannerDepth: 20,
 			showErrors: false,
 			suggestMixins: true,
