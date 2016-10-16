@@ -3,18 +3,7 @@
 import { INode, NodeType } from '../types/nodes';
 import { IVariable } from '../types/symbols';
 
-/**
- * Returns the child Node of the specified type.
- *
- * @param {INode} parent
- * @param {NodeType} type
- * @returns {INode[]}
- */
-function getChildByType(parent: INode, type: NodeType): INode[] {
-	let childs = parent.getChildren().filter((node) => node.type === type);
-
-	return childs.length ? childs : null;
-}
+import { getChildByType } from '../utils/ast';
 
 /**
  * Returns information about Variable Declaration.
@@ -45,12 +34,7 @@ export function makeVariable(node: INode, fromMixin: string = null): IVariable {
  * @returns {IVariable}
  */
 export function makeSetVariable(node: INode): IVariable[] {
-	const childs: INode[] = getChildByType(node, NodeType.Declarations);
-	if (!childs) {
-		return [];
-	}
-
-	const variableNodes = getChildByType(childs[0], NodeType.VariableDeclaration);
+	const variableNodes = getChildByType(node, NodeType.VariableDeclaration);
 	if (!variableNodes) {
 		return [];
 	}

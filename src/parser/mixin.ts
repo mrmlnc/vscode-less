@@ -4,6 +4,7 @@ import { INode, NodeType } from '../types/nodes';
 import { IVariable, IMixin } from '../types/symbols';
 
 import { makeVariable } from './variable';
+import { getChildByType } from '../utils/ast';
 
 /**
  * Calculation chain of selectors to mixins.
@@ -55,6 +56,27 @@ export function makeMixin(node: INode): IMixin {
 	return {
 		name,
 		parameters: params,
-		parent: getParentSelectors(node)
+		parent: getParentSelectors(node),
+		offset: node.offset
 	};
+}
+
+/**
+ * Returns information about set of Variable Declarations.
+ *
+ * @param {INode} node
+ * @returns {IMixin[]}
+ */
+export function makeSetMixin(node: INode): IMixin[] {
+	const mixinNodes = getChildByType(node, NodeType.MixinDeclaration);
+	if (!mixinNodes) {
+		return [];
+	}
+
+	const variables: IMixin[] = [];
+	for (let i = 0; i < mixinNodes.length; i++) {
+		variables.push(makeMixin(mixinNodes[i]));
+	}
+
+	return variables;
 }

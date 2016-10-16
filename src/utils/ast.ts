@@ -73,3 +73,16 @@ export function hasParentsByType(node: INode, types: NodeType[]): boolean {
 		node = node.getParent();
 	}
 }
+
+/**
+ * Returns the child Node of the specified type.
+ *
+ * @param {INode} parent
+ * @param {NodeType} type
+ * @returns {INode[]}
+ */
+export function getChildByType(parent: INode, type: NodeType): INode[] {
+	let childs = parent.getChildren().filter((node) => node.type === type);
+
+	return childs.length ? childs : null;
+}

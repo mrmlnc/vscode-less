@@ -29,12 +29,14 @@ describe('Completion', () => {
 				{
 					name: '.test',
 					parameters: [],
-					parent: ''
+					parent: '',
+					offset: 0
 				},
 				{
 					name: '.skip',
 					parameters: [],
-					parent: '.a &'
+					parent: '.a &',
+					offset: 0
 				}
 			],
 			imports: []

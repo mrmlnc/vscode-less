@@ -13,6 +13,7 @@ export interface IMixin {
 	name: string;
 	parameters: IVariable[];
 	parent: string;
+	offset: number;
 }
 
 export interface ISymbols {

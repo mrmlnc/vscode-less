@@ -53,14 +53,14 @@ describe('Parser', () => {
 		// Variables
 		assert.equal(symbols.variables.length, 3);
 
-		assert.equal(symbols.variables[0].name, '@b');
-		assert.equal(symbols.variables[0].value, null);
+		assert.equal(symbols.variables[0].name, '@name');
+		assert.equal(symbols.variables[0].value, '"value"');
 
 		assert.equal(symbols.variables[1].name, '@a');
 		assert.equal(symbols.variables[1].value, '1');
 
-		assert.equal(symbols.variables[2].name, '@name');
-		assert.equal(symbols.variables[2].value, '"value"');
+		assert.equal(symbols.variables[2].name, '@b');
+		assert.equal(symbols.variables[2].value, null);
 
 		// Mixins
 		assert.equal(symbols.mixins.length, 1);

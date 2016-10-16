@@ -6,7 +6,7 @@ import { TextDocument, Files } from 'vscode-languageserver';
 import { getLESSLanguageService } from 'vscode-css-languageservice';
 
 import { INode } from '../types/nodes';
-import { IDocument, IVariable } from '../types/symbols';
+import { IDocument } from '../types/symbols';
 
 import { findSymbols, findSymbolsAtOffset } from '../parser/symbols';
 import { getNodeAtOffset } from '../utils/ast';
@@ -30,23 +30,15 @@ ls.configure({
  */
 export function parseDocument(document: TextDocument, dir: string, offset: number = null): IDocument {
 	const ast = <INode>ls.parseStylesheet(document);
-	const symbols = findSymbols(ast);
 
-	const documentPath = Files.uriToFilePath(document.uri);
-	symbols.document = documentPath || document.uri;
+	let symbols = findSymbols(ast);
+	symbols.document = Files.uriToFilePath(document.uri) || document.uri;
 
 	if (offset) {
-		symbols.variables = symbols.variables
-			.concat(findSymbolsAtOffset(ast, offset).variables)
-			.sort((a: IVariable, b: IVariable) => {
-				if (a.offset > b.offset) {
-					return -1;
-				} else if (a.offset < b.offset) {
-					return 1;
-				}
+		const scopedSymbols = findSymbolsAtOffset(ast, offset);
 
-				return 0;
-			});
+		symbols.variables = symbols.variables.concat(scopedSymbols.variables);
+		symbols.mixins = symbols.mixins.concat(scopedSymbols.mixins);
 	}
 
 	symbols.imports = symbols.imports.map((filepath) => {

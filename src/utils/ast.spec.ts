@@ -6,7 +6,12 @@ import { TextDocument } from 'vscode-languageserver';
 import { getLESSLanguageService } from 'vscode-css-languageservice';
 
 import { INode, NodeType } from '../types/nodes';
-import { getNodeAtOffset, getParentNodeByType, hasParentsByType } from './ast';
+import {
+	getNodeAtOffset,
+	getParentNodeByType,
+	hasParentsByType,
+	getChildByType
+} from './ast';
 
 const ls = getLESSLanguageService();
 
@@ -57,6 +62,15 @@ describe('Ast', () => {
 
 		assert.ok(hasParentsByType(node, [NodeType.MixinDeclaration]));
 		assert.ok(!hasParentsByType(node, [NodeType.Document]));
+	});
+
+	it('getChildByType', () => {
+		const ast = parseText([
+			'@a: 1;',
+			'@b: 2;'
+		]);
+
+		assert.equal(getChildByType(ast, NodeType.VariableDeclaration).length, 2);
 	});
 
 });

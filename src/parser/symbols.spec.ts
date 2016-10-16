@@ -81,7 +81,7 @@ describe('Symbols', () => {
 			'}'
 		]);
 
-		const { variables } = findSymbolsAtOffset(ast, 22);
+		const { variables } = findSymbolsAtOffset(ast, 21);
 
 		assert.equal(variables.length, 1);
 
@@ -108,12 +108,12 @@ describe('Symbols', () => {
 		//   .d() {__5__}
 		// }__6__
 
-		assert.equal(findSymbolsAtOffset(ast, 6).mixins.length, 1, '__0__');
-		assert.equal(findSymbolsAtOffset(ast, 12).mixins.length, 0, '__1__');
+		assert.equal(findSymbolsAtOffset(ast, 6).mixins.length, 0, '__0__');
+		assert.equal(findSymbolsAtOffset(ast, 12).mixins.length, 1, '__1__');
 		assert.equal(findSymbolsAtOffset(ast, 21).mixins.length, 1, '__2__');
-		assert.equal(findSymbolsAtOffset(ast, 24).mixins.length, 0, '__3__');
+		assert.equal(findSymbolsAtOffset(ast, 24).mixins.length, 1, '__3__');
 		assert.equal(findSymbolsAtOffset(ast, 31).mixins.length, 1, '__4__');
-		assert.equal(findSymbolsAtOffset(ast, 40).mixins.length, 2, '__5__');
+		assert.equal(findSymbolsAtOffset(ast, 40).mixins.length, 1, '__5__');
 		assert.equal(findSymbolsAtOffset(ast, 43).mixins.length, 1, '__6__');
 	});
 

@@ -4,7 +4,7 @@ import { INode, NodeType } from '../types/nodes';
 import { IVariable, IMixin, ISymbols } from '../types/symbols';
 
 import { makeVariable, makeSetVariable } from './variable';
-import { makeMixin } from './mixin';
+import { makeMixin, makeSetMixin } from './mixin';
 import { getNodeAtOffset, getParentNodeByType } from '../utils/ast';
 
 /**
@@ -95,15 +95,13 @@ export function findSymbolsAtOffset(parsedDocument: INode, offset: number): ISym
 		if (!node || node.type === NodeType.Stylesheet) {
 			break;
 		} else if (node.type === NodeType.MixinDeclaration) {
-			const mixin = makeMixin(node);
-
-			mixins.push(mixin);
 			variables.push(
-				...mixin.parameters,
+				...makeMixin(node).parameters,
 				...makeSetVariable(node)
 			);
-		} else if (node.type === NodeType.Ruleset) {
+		} else if (node.type === NodeType.Ruleset || node.type === NodeType.Declarations) {
 			variables.push(...makeSetVariable(node));
+			mixins.push(...makeSetMixin(node));
 		}
 
 		node = node.getParent();

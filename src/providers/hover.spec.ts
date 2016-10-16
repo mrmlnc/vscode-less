@@ -41,7 +41,8 @@ describe('Hover', () => {
 			mixins: [{
 				name: '.test',
 				parameters: [],
-				parent: null
+				parent: null,
+				offset: 0
 			}],
 			imports: []
 		}];
