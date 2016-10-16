@@ -67,4 +67,40 @@ describe('Hover', () => {
 		assert.equal(mixinHover.value, '.test() {…}');
 	});
 
+	it('issue-8', () => {
+		const symbolsList: ISymbols[] = [{
+			document: 'test.less',
+			variables: [],
+			mixins: [
+				{
+					name: '.a',
+					parameters: [],
+					parent: null,
+					offset: 0
+				},
+				{
+					name: '.b',
+					parameters: [],
+					parent: null,
+					offset: 0
+				}
+			],
+			imports: []
+		}];
+
+		const ast = parseText([
+			'.a() {',
+			'  .b() {}',
+			'  .b();',
+			'}'
+		]);
+
+		// Stylesheet -> MixinDeclaration -> Declarations -> MixinReference -> Identifier:
+		const mixinNode = ast.getChild(0).getChild(2).getChild(1).getChild(0);
+		const mixinHover: IHover = <any>doHover('test.less', symbolsList, mixinNode).contents;
+
+		assert.equal(mixinHover.language, 'less');
+		assert.equal(mixinHover.value, '.b() {…}');
+	});
+
 });

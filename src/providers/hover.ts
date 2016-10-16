@@ -110,7 +110,7 @@ export function doHover(docPath: string, symbolsList: ISymbols[], hoverNode: INo
 			type: 'variables'
 		};
 	} else if (hoverNode.type === NodeType.Identifier) {
-		let node = getParentNodeByType(hoverNode, NodeType.MixinDeclaration) || getParentNodeByType(hoverNode, NodeType.MixinReference);
+		let node = getParentNodeByType(hoverNode, NodeType.MixinReference) || getParentNodeByType(hoverNode, NodeType.MixinDeclaration);
 		if (node) {
 			identifier = {
 				name: node.getName(),
