@@ -48,10 +48,10 @@ Just install the plugin and use it.
 
 The maximum number of nested directories to scan.
 
-**less.directoryFilter**
+**less.scannerExclude**
 
   * Type: `string[]`
-  * Default: `["!.git", "!**/node_modules", "!**/bower_components"]`
+  * Default: `[".git", "**/node_modules", "**/bower_components"]`
 
 List of Glob-patterns for directories that are excluded when scanning.
 
