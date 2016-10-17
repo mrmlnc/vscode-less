@@ -52,7 +52,7 @@ export function doSignatureHelp(document: IServerDocument, symbolsList: ISymbols
 			const mixin = symbols.mixins[i];
 			const mixinName = mixin.parent ? mixin.parent + ' ' + mixin.name : mixin.name;
 
-			if (entry.name === mixinName) {
+			if (entry.name === mixinName && mixin.parameters.length >= entry.parameters.length) {
 				mixins.push({
 					name: mixinName,
 					parameters: mixin.parameters
