@@ -40,6 +40,7 @@ export function doCompletion(docPath: string, word: string, symbolsList: ISymbol
 	if (settings.suggestVariables && (word === '@' || isInterpolationVariable)) {
 		symbolsList.forEach((symbols) => {
 			const fsPath = getDocumentPath(docPath, symbols.document);
+			const isImplicitlyImport = symbols.document !== docPath && documentImports.indexOf(symbols.document) === -1;
 
 			symbols.variables.forEach((variable) => {
 				// Drop Variable if its value is RuleSet in interpolation
@@ -50,7 +51,7 @@ export function doCompletion(docPath: string, word: string, symbolsList: ISymbol
 
 				// Add 'implicitly' prefix for Path if the file imported implicitly
 				let detailPath = fsPath;
-				if (symbols.document !== docPath && documentImports.indexOf(symbols.document) === -1) {
+				if (isImplicitlyImport) {
 					detailPath = `(implicitly) ${detailPath}`;
 				}
 
@@ -72,6 +73,7 @@ export function doCompletion(docPath: string, word: string, symbolsList: ISymbol
 	} else if (settings.suggestMixins && (word === '.' || word === '#')) {
 		symbolsList.forEach((symbols) => {
 			const fsPath = getDocumentPath(docPath, symbols.document);
+			const isImplicitlyImport = symbols.document !== docPath && documentImports.indexOf(symbols.document) === -1;
 
 			symbols.mixins.forEach((mixin) => {
 				// Drop Mixin if his parents are calculated dynamically
@@ -87,7 +89,7 @@ export function doCompletion(docPath: string, word: string, symbolsList: ISymbol
 
 				// Add 'implicitly' prefix for Path if the file imported implicitly
 				let detailPath = fsPath;
-				if (symbols.document !== docPath && documentImports.indexOf(symbols.document) === -1) {
+				if (isImplicitlyImport) {
 					detailPath = `(implicitly) ${detailPath}`;
 				}
 

@@ -1,5 +1,6 @@
 'use strict';
 
+import { TextDocument } from 'vscode-languageserver';
 import { INode } from './nodes';
 
 export interface IVariable {
@@ -32,4 +33,11 @@ export interface IDocument {
 export interface IDocumentCollection {
 	symbols: ISymbols[];
 	node: INode;
+}
+
+export interface IServerDocument {
+	textDocument: TextDocument;
+	path: string;
+	offset: number;
+	word: string;
 }

@@ -7,11 +7,13 @@ import {
 	IPCMessageWriter,
 	TextDocuments,
 	TextDocument,
+	TextDocumentPositionParams,
 	InitializeParams,
 	InitializeResult,
 	Files
 } from 'vscode-languageserver';
 
+import { IServerDocument } from './types/symbols';
 import { ISettings } from './types/settings';
 
 import { getCurrentWord } from './utils/string';
@@ -36,6 +38,25 @@ console.error = connection.console.error.bind(connection.console);
 // Create a simple text document manager. The text document manager
 // supports full document sync only
 const documents: TextDocuments = new TextDocuments();
+
+/**
+ * Returns IServerDocument object.
+ */
+function makeServerDocument(docs: TextDocuments, documentPosition: TextDocumentPositionParams): IServerDocument {
+	const document: TextDocument = documents.get(documentPosition.textDocument.uri);
+
+	// Document information
+	const docPath = Files.uriToFilePath(document.uri);
+	const offset = document.offsetAt(documentPosition.position);
+	const currentWord = getCurrentWord(document.getText(), offset);
+
+	return {
+		textDocument: document,
+		path: docPath,
+		offset,
+		word: currentWord
+	};
+}
 
 // Drop cache for closed files
 documents.onDidClose((event) => {
@@ -78,31 +99,16 @@ connection.onDidChangeConfiguration((params) => {
 });
 
 connection.onCompletion((textDocumentPosition) => {
-	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
-
-	// Document filepath
-	const docPath = Files.uriToFilePath(document.uri);
-
-	// Skip not saved files
-	if (!docPath) {
+	const doc = makeServerDocument(documents, textDocumentPosition);
+	if (!doc.path) {
 		return;
 	}
-
-	// Information about current Document
-	const doc = {
-		textDocument: document,
-		path: docPath,
-		offset: document.offsetAt(textDocumentPosition.position)
-	};
-
-	// Current word
-	const word = getCurrentWord(document.getText(), doc.offset);
 
 	return doScanner(workspaceRoot, cache, settings, doc).then((collection) => {
 		// Cache invalidation
 		invalidateCacheStorage(cache, collection.symbols);
 
-		return doCompletion(doc.path, word, collection.symbols, settings);
+		return doCompletion(doc.path, doc.word, collection.symbols, settings);
 	}).catch((err) => {
 		if (settings.showErrors) {
 			connection.window.showErrorMessage(err);
@@ -111,22 +117,10 @@ connection.onCompletion((textDocumentPosition) => {
 });
 
 connection.onHover((textDocumentPosition) => {
-	const document: TextDocument = documents.get(textDocumentPosition.textDocument.uri);
-
-	// Document filepath
-	const docPath = Files.uriToFilePath(document.uri);
-
-	// Skip not saved files
-	if (!docPath) {
+	const doc = makeServerDocument(documents, textDocumentPosition);
+	if (!doc.path) {
 		return;
 	}
-
-	// Information about current Document
-	const doc = {
-		textDocument: document,
-		path: docPath,
-		offset: document.offsetAt(textDocumentPosition.position)
-	};
 
 	return doScanner(workspaceRoot, cache, settings, doc).then((collection) => {
 		// Cache invalidation

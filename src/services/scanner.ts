@@ -8,7 +8,7 @@ import * as micromatch from 'micromatch';
 import { TextDocument } from 'vscode-languageserver';
 import { ICache } from './cache';
 import { INode } from '../types/nodes';
-import { IDocumentCollection, ISymbols } from '../types/symbols';
+import { IServerDocument, IDocumentCollection, ISymbols } from '../types/symbols';
 import { ISettings } from '../types/settings';
 
 import { parseDocument } from './parser';
@@ -55,7 +55,7 @@ function makeEntryFile(filepath: string, ctime: Date): IFile {
 /**
  * Returns Symbols from Imported files.
  */
-function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], document: IDocument, settings: ISettings): Promise<ISymbols[]> {
+function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], settings: ISettings): Promise<ISymbols[]> {
 	let nesting = 0;
 
 	function recurse(accum: ISymbols[], list: ISymbols[]): any {
@@ -122,7 +122,7 @@ function scannerFilter(stat: readdir.IEntry, excludePatterns: string[]): boolean
 /**
  * Returns all Symbols in the opened workspase.
  */
-export function doScanner(root: string, cache: ICache, settings: ISettings, document: IDocument = null): Promise<IDocumentCollection> {
+export function doScanner(root: string, cache: ICache, settings: ISettings, document?: IServerDocument): Promise<IDocumentCollection> {
 	let ast: INode = null;
 	const listOfPromises = [];
 
@@ -190,7 +190,7 @@ export function doScanner(root: string, cache: ICache, settings: ISettings, docu
 				projectSymbols = await Promise.all(listOfPromises);
 
 				if (settings.scanImportedFiles) {
-					importedSymbols = await scannerImportedFiles(cache, projectSymbols, document, settings);
+					importedSymbols = await scannerImportedFiles(cache, projectSymbols, settings);
 				}
 			} catch (err) {
 				if (settings.showErrors) {
