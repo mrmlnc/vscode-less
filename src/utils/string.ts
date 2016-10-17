@@ -19,7 +19,7 @@ export function getTextBeforePosition(text: string, offset: number) {
 	while ('\n\r'.indexOf(text.charAt(i)) === -1) {
 		i--;
 	}
-	return text.substring(i + 1, offset + 1);
+	return text.substring(i + 1, offset);
 }
 
 /**

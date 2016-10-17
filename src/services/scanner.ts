@@ -101,9 +101,7 @@ function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], settings: 
 		});
 	}
 
-	return recurse([], symbolsList).catch((err) => {
-		console.log(err);
-	});
+	return recurse([], symbolsList);
 }
 
 /**

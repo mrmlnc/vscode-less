@@ -40,4 +40,5 @@ export interface IServerDocument {
 	path: string;
 	offset: number;
 	word: string;
+	textBeforeWord: string;
 }

@@ -22,13 +22,6 @@ function makeMixinDocumentation(symbol: IMixin): string {
 
 /**
  * Do Completion :)
- *
- * @export
- * @param {string} docPath
- * @param {string} word
- * @param {ISymbols[]} symbolsList
- * @param {ISettings} settings
- * @returns {CompletionList}
  */
 export function doCompletion(docPath: string, word: string, symbolsList: ISymbols[], settings: ISettings): CompletionList {
 	const completions = CompletionList.create([], false);
@@ -98,7 +91,7 @@ export function doCompletion(docPath: string, word: string, symbolsList: ISymbol
 					kind: CompletionItemKind.Function,
 					detail: detailPath,
 					documentation: makeMixinDocumentation(mixin),
-					insertText: fullName + '({{_}});'
+					insertText: fullName
 				});
 			});
 		});

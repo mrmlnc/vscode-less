@@ -21,8 +21,8 @@ describe('String', () => {
 	it('getTextBeforePosition', () => {
 		const text = `\n.text(@a) {}`;
 
-		assert.equal(getTextBeforePosition(text, 5), '.text');
-		assert.equal(getTextBeforePosition(text, 8), '.text(@a');
+		assert.equal(getTextBeforePosition(text, 6), '.text');
+		assert.equal(getTextBeforePosition(text, 9), '.text(@a');
 	});
 
 	it('getTextAfterPosition', () => {

@@ -16,11 +16,13 @@ import {
 import { IServerDocument } from './types/symbols';
 import { ISettings } from './types/settings';
 
-import { getCurrentWord } from './utils/string';
+import { getCurrentWord, getTextBeforePosition } from './utils/string';
 import { getCacheStorage, invalidateCacheStorage } from './services/cache';
 import { doScanner } from './services/scanner';
+
 import { doCompletion } from './providers/completion';
 import { doHover } from './providers/hover';
+import { doSignatureHelp } from './providers/signatureHelp';
 
 // Cache Storage
 let cache = getCacheStorage();
@@ -48,13 +50,13 @@ function makeServerDocument(docs: TextDocuments, documentPosition: TextDocumentP
 	// Document information
 	const docPath = Files.uriToFilePath(document.uri);
 	const offset = document.offsetAt(documentPosition.position);
-	const currentWord = getCurrentWord(document.getText(), offset);
 
 	return {
 		textDocument: document,
 		path: docPath,
 		offset,
-		word: currentWord
+		word: getCurrentWord(document.getText(), offset),
+		textBeforeWord: getTextBeforePosition(document.getText(), offset)
 	};
 }
 
@@ -82,6 +84,9 @@ connection.onInitialize((params: InitializeParams): Promise<InitializeResult> =>
 				completionProvider: {
 					resolveProvider: false,
 					triggerCharacters: ['.', '#', '@', '{']
+				},
+				signatureHelpProvider: {
+					triggerCharacters: ['(', ',', ';']
 				},
 				hoverProvider: true
 			}
@@ -127,6 +132,21 @@ connection.onHover((textDocumentPosition) => {
 		invalidateCacheStorage(cache, collection.symbols);
 
 		return doHover(doc.path, collection.symbols, collection.node);
+	}).catch((err) => {
+		if (settings.showErrors) {
+			connection.window.showErrorMessage(err);
+		}
+	});
+});
+
+connection.onSignatureHelp((textDocumentPosition) => {
+	const doc = makeServerDocument(documents, textDocumentPosition);
+
+	return doScanner(workspaceRoot, cache, settings, doc).then((collection) => {
+		// Cache invalidation
+		invalidateCacheStorage(cache, collection.symbols);
+
+		return doSignatureHelp(doc, collection.symbols);
 	}).catch((err) => {
 		if (settings.showErrors) {
 			connection.window.showErrorMessage(err);
