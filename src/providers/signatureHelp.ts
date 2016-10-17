@@ -48,18 +48,16 @@ export function doSignatureHelp(document: IServerDocument, symbolsList: ISymbols
 	}
 
 	symbolsList.forEach((symbols) => {
-		for (let i = 0; i < symbols.mixins.length; i++) {
-			const mixin = symbols.mixins[i];
+		symbols.mixins.forEach((mixin) => {
 			const mixinName = mixin.parent ? mixin.parent + ' ' + mixin.name : mixin.name;
 
-			if (entry.name === mixinName && mixin.parameters.length >= entry.parameters.length) {
+			if (entry.name === mixin.name && mixin.parameters.length >= entry.parameters.length) {
 				mixins.push({
 					name: mixinName,
 					parameters: mixin.parameters
 				});
-				return;
 			}
-		}
+		});
 	});
 
 	if (mixins.length === 0) {
