@@ -30,11 +30,6 @@ export interface IDocument {
 	symbols: ISymbols;
 }
 
-export interface IDocumentCollection {
-	symbols: ISymbols[];
-	node: INode;
-}
-
 export interface IServerDocument {
 	textDocument: TextDocument;
 	path: string;

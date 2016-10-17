@@ -22,7 +22,7 @@ function parseText(text: string[], naked = false): INode {
 	return naked ? ast : ast.getChildren()[0];
 }
 
-describe('Mixin', () => {
+describe('Parser/Mixin', () => {
 
 	it('Simple', () => {
 		const ast = parseText([

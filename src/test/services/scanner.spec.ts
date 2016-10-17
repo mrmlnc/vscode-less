@@ -8,7 +8,7 @@ import { ISettings } from '../../types/settings';
 
 const cache = getCacheStorage();
 
-describe('Scanner', () => {
+describe('Services/Scanner', () => {
 
 	it('Scan', () => {
 		const options = <ISettings>{
@@ -16,8 +16,8 @@ describe('Scanner', () => {
 			scannerExclude: []
 		};
 
-		return doScanner('./fixtures', cache, options).then((result) => {
-			assert.equal(result.symbols.length, 5);
+		return doScanner('./fixtures', cache, options).then((symbols) => {
+			assert.equal(symbols.length, 5);
 		});
 	});
 
@@ -27,8 +27,8 @@ describe('Scanner', () => {
 			scannerExclude: ['**/includes', '**/mixins']
 		};
 
-		return doScanner('./fixtures', cache, options).then((result) => {
-			assert.equal(result.symbols.length, 2);
+		return doScanner('./fixtures', cache, options).then((symbols) => {
+			assert.equal(symbols.length, 2);
 		});
 	});
 
@@ -39,8 +39,8 @@ describe('Scanner', () => {
 			scanImportedFiles: true
 		};
 
-		return doScanner('./fixtures', cache, options).then((result) => {
-			assert.equal(result.symbols.length, 5);
+		return doScanner('./fixtures', cache, options).then((symbols) => {
+			assert.equal(symbols.length, 5);
 		});
 	});
 

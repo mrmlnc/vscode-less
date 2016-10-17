@@ -32,7 +32,8 @@ export function activate(context: vscode.ExtensionContext) {
 	const clientOptions: LanguageClientOptions = {
 		documentSelector: ['less'],
 		synchronize: {
-			configurationSection: ['less']
+			configurationSection: ['less'],
+			fileEvents: vscode.workspace.createFileSystemWatcher('**/*.less')
 		},
 		initializationOptions: {
 			settings: vscode.workspace.getConfiguration('less')

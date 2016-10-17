@@ -9,6 +9,7 @@ export interface ICache {
 	drop: (uri: string) => void;
 	dispose: () => void;
 	storage: () => any;
+	keys: () => string[];
 }
 
 /**
@@ -35,7 +36,8 @@ export function getCacheStorage(): ICache {
 		dispose: () => {
 			storage = {};
 		},
-		storage: () => storage
+		storage: () => storage,
+		keys: () => Object.keys(storage)
 	};
 }
 

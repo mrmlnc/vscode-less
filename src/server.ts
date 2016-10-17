@@ -6,17 +6,13 @@ import {
 	IPCMessageReader,
 	IPCMessageWriter,
 	TextDocuments,
-	TextDocument,
-	TextDocumentPositionParams,
 	InitializeParams,
 	InitializeResult,
 	Files
 } from 'vscode-languageserver';
 
-import { IServerDocument } from './types/symbols';
 import { ISettings } from './types/settings';
 
-import { getCurrentWord, getTextBeforePosition } from './utils/string';
 import { getCacheStorage, invalidateCacheStorage } from './services/cache';
 import { doScanner } from './services/scanner';
 
@@ -40,25 +36,6 @@ console.error = connection.console.error.bind(connection.console);
 // Create a simple text document manager. The text document manager
 // supports full document sync only
 const documents: TextDocuments = new TextDocuments();
-
-/**
- * Returns IServerDocument object.
- */
-function makeServerDocument(docs: TextDocuments, documentPosition: TextDocumentPositionParams): IServerDocument {
-	const document: TextDocument = documents.get(documentPosition.textDocument.uri);
-
-	// Document information
-	const docPath = Files.uriToFilePath(document.uri);
-	const offset = document.offsetAt(documentPosition.position);
-
-	return {
-		textDocument: document,
-		path: docPath,
-		offset,
-		word: getCurrentWord(document.getText(), offset),
-		textBeforeWord: getTextBeforePosition(document.getText(), offset)
-	};
-}
 
 // Drop cache for closed files
 documents.onDidClose((event) => {
@@ -104,54 +81,29 @@ connection.onDidChangeConfiguration((params) => {
 });
 
 connection.onCompletion((textDocumentPosition) => {
-	const doc = makeServerDocument(documents, textDocumentPosition);
-	if (!doc.path) {
-		return;
-	}
+	return doScanner(workspaceRoot, cache, settings).then((symbols) => {
+		invalidateCacheStorage(cache, symbols);
 
-	return doScanner(workspaceRoot, cache, settings, doc).then((collection) => {
-		// Cache invalidation
-		invalidateCacheStorage(cache, collection.symbols);
-
-		return doCompletion(doc.path, doc.word, collection.symbols, settings);
-	}).catch((err) => {
-		if (settings.showErrors) {
-			connection.window.showErrorMessage(err);
-		}
+		const document = documents.get(textDocumentPosition.textDocument.uri);
+		const offset = document.offsetAt(textDocumentPosition.position);
+		return doCompletion(document, offset, settings, cache);
 	});
 });
 
 connection.onHover((textDocumentPosition) => {
-	const doc = makeServerDocument(documents, textDocumentPosition);
-	if (!doc.path) {
-		return;
-	}
+	return doScanner(workspaceRoot, cache, settings).then((symbols) => {
+		invalidateCacheStorage(cache, symbols);
+		const document = documents.get(textDocumentPosition.textDocument.uri);
+		const offset = document.offsetAt(textDocumentPosition.position);
 
-	return doScanner(workspaceRoot, cache, settings, doc).then((collection) => {
-		// Cache invalidation
-		invalidateCacheStorage(cache, collection.symbols);
-
-		return doHover(doc.path, collection.symbols, collection.node);
-	}).catch((err) => {
-		if (settings.showErrors) {
-			connection.window.showErrorMessage(err);
-		}
+		return doHover(document, offset, cache);
 	});
 });
 
 connection.onSignatureHelp((textDocumentPosition) => {
-	const doc = makeServerDocument(documents, textDocumentPosition);
-
-	return doScanner(workspaceRoot, cache, settings, doc).then((collection) => {
-		// Cache invalidation
-		invalidateCacheStorage(cache, collection.symbols);
-
-		return doSignatureHelp(doc, collection.symbols);
-	}).catch((err) => {
-		if (settings.showErrors) {
-			connection.window.showErrorMessage(err);
-		}
-	});
+	const document = documents.get(textDocumentPosition.textDocument.uri);
+	const offset = document.offsetAt(textDocumentPosition.position);
+	return doSignatureHelp(document, offset, cache);
 });
 
 // Dispose cache

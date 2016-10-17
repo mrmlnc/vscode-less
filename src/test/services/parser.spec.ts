@@ -10,7 +10,7 @@ function parseText(text: string[]): TextDocument {
 	return TextDocument.create('test.less', 'less', 1, text.join('\n'));
 }
 
-describe('Parser', () => {
+describe('Services/Parser', () => {
 
 	it('Find symbols without offset position', () => {
 		const doc = parseText([

@@ -5,9 +5,7 @@ import * as assert from 'assert';
 import { TextDocument } from 'vscode-languageserver';
 import { getLESSLanguageService } from 'vscode-css-languageservice';
 
-import { INode } from '../../types/nodes';
-import { ISymbols } from '../../types/symbols';
-
+import { getCacheStorage } from '../../services/cache';
 import { doHover } from '../../providers/hover';
 
 const ls = getLESSLanguageService();
@@ -17,58 +15,59 @@ ls.configure({
 	validate: false
 });
 
-function parseText(text: string[]): INode {
-	const doc = TextDocument.create('test.less', 'less', 1, text.join('\n'));
-	return <INode>ls.parseStylesheet(doc);
-}
-
 interface IHover {
 	language: string;
 	value: string;
 }
 
-describe('Hover', () => {
+describe('Providers/Hover', () => {
 
 	it('doHover', () => {
-		const symbolsList: ISymbols[] = [{
-			document: 'test.less',
-			variables: [{
-				name: '@test',
-				value: '1',
-				offset: 0,
-				mixin: null
-			}],
-			mixins: [{
-				name: '.test',
-				parameters: [],
-				parent: null,
-				offset: 0
-			}],
-			imports: []
-		}];
+		const cache = getCacheStorage();
 
-		const ast = parseText([
+		cache.set('test.less', {
+			document: 'test.less',
+			variables: [
+				{
+					name: '@test',
+					value: '1',
+					offset: 0,
+					mixin: null
+				}
+			],
+			mixins: [
+				{
+					name: '.test',
+					parameters: [],
+					parent: '',
+					offset: 0
+				}
+			],
+			imports: []
+		});
+
+		const document = TextDocument.create('test.less', 'less', 1, [
 			'@test: 1;',
 			'.test() {}'
-		]);
+		].join('\n'));
 
-		// Stylesheet -> VariableDeclaration -> Variable
-		const variableNode = ast.getChild(0).getChild(0);
-		const variableHover: IHover = <any>doHover('test.less', symbolsList, variableNode).contents;
+		// Variable
+		const variableHover: IHover = <any>doHover(document, 2, cache).contents;
 
 		assert.equal(variableHover.language, 'less');
 		assert.equal(variableHover.value, '@test: 1');
 
-		// Stylesheet -> MixinDeclaration -> Identifier
-		const mixinNode = ast.getChild(1).getChild(0);
-		const mixinHover: IHover = <any>doHover('test.less', symbolsList, mixinNode).contents;
+		// Mixin
+		const mixinHover: IHover = <any>doHover(document, 12, cache).contents;
 
 		assert.equal(mixinHover.language, 'less');
 		assert.equal(mixinHover.value, '.test() {…}');
 	});
 
 	it('issue-8', () => {
-		const symbolsList: ISymbols[] = [{
+		const cache = getCacheStorage();
+
+		cache.set('test.less', {
 			document: 'test.less',
 			variables: [],
 			mixins: [
@@ -86,18 +85,17 @@ describe('Hover', () => {
 				}
 			],
 			imports: []
-		}];
+		});
 
-		const ast = parseText([
+		const document = TextDocument.create('test.less', 'less', 1, [
 			'.a() {',
 			'  .b() {}',
 			'  .b();',
 			'}'
-		]);
+		].join('\n'));
 
-		// Stylesheet -> MixinDeclaration -> Declarations -> MixinReference -> Identifier:
-		const mixinNode = ast.getChild(0).getChild(2).getChild(1).getChild(0);
-		const mixinHover: IHover = <any>doHover('test.less', symbolsList, mixinNode).contents;
+		// Mixin
+		const mixinHover: IHover = <any>doHover(document, 21, cache).contents;
 
 		assert.equal(mixinHover.language, 'less');
 		assert.equal(mixinHover.value, '.b() {…}');

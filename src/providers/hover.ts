@@ -1,16 +1,23 @@
 'use strict';
 
+import * as path from 'path';
+
 import {
 	Hover,
-	MarkedString
+	MarkedString,
+	TextDocument,
+	Files
 } from 'vscode-languageserver';
 
-import { INode, NodeType } from '../types/nodes';
+import { NodeType } from '../types/nodes';
 import { ISymbols, IVariable, IMixin } from '../types/symbols';
+import { ICache } from '../services/cache';
 
+import { parseDocument } from '../services/parser';
+import { getSymbolsCollection } from '../utils/symbols';
 import { getCurrentDocumentImports, getDocumentPath } from '../utils/document';
 import { getLimitedString } from '../utils/string';
-import { getParentNodeByType } from '../utils/ast';
+import { getParentNodeByType, getNodeAtOffset } from '../utils/ast';
 
 /**
  * Returns a colored (marked) line for Variable.
@@ -77,10 +84,19 @@ function getSymbol(symbolList: ISymbols[], identifier: any, currentPath: string)
 /**
  * Do Hover :)
  */
-export function doHover(docPath: string, symbolsList: ISymbols[], hoverNode: INode): Hover {
+export function doHover(document: TextDocument, offset: number, cache: ICache): Hover {
+	const documentPath = Files.uriToFilePath(document.uri) || document.uri;
+	if (!documentPath) {
+		return null;
+	}
+
+	const resource = parseDocument(document, path.dirname(documentPath), offset);
+	const hoverNode = getNodeAtOffset(resource.ast, offset);
 	if (!hoverNode || !hoverNode.type) {
 		return;
 	}
+
+	const symbolsList = getSymbolsCollection(cache).concat(resource.symbols);
 
 	let identifier: { type: string; name: string; } = null;
 	if (hoverNode.type === NodeType.VariableName) {
@@ -103,10 +119,10 @@ export function doHover(docPath: string, symbolsList: ISymbols[], hoverNode: INo
 	}
 
 	// Imports for current document
-	const documentImports = getCurrentDocumentImports(symbolsList, docPath);
+	const documentImports = getCurrentDocumentImports(symbolsList, documentPath);
 
 	// All symbols
-	const symbol = getSymbol(symbolsList, identifier, docPath);
+	const symbol = getSymbol(symbolsList, identifier, documentPath);
 
 	// Content for Hover popup
 	let contents: MarkedString = '';

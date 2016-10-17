@@ -5,7 +5,7 @@ import * as assert from 'assert';
 import { ISymbols } from '../../types/symbols';
 import { getCurrentDocumentImports, getDocumentPath } from '../../utils/document';
 
-describe('Document', () => {
+describe('Utils/Document', () => {
 
 	it('getCurrentDocumentImports', () => {
 		const symbolsList: ISymbols[] = [

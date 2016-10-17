@@ -9,7 +9,7 @@ import {
 	getLimitedString
 } from '../../utils/string';
 
-describe('String', () => {
+describe('Utils/String', () => {
 
 	it('getCurrentWord', () => {
 		const text = `.text(@a) {}`;

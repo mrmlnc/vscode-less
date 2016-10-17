@@ -25,7 +25,7 @@ function parseText(text: string[]): INode {
 	return <INode>ls.parseStylesheet(doc);
 }
 
-describe('Ast', () => {
+describe('Utils/Ast', () => {
 
 	it('getNodeAtOffset', () => {
 		const ast = parseText([

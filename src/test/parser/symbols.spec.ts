@@ -20,7 +20,7 @@ function parseText(text: string[]): INode {
 	return <INode>ls.parseStylesheet(doc);
 }
 
-describe('Symbols', () => {
+describe('Parser/Symbols', () => {
 
 	it('findSymbols - Variables', () => {
 		const ast = parseText([

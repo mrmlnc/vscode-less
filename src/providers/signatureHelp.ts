@@ -1,7 +1,20 @@
 'use strict';
-import { SignatureHelp, SignatureInformation } from 'vscode-languageserver';
 
-import { IServerDocument, ISymbols, IVariable } from '../types/symbols';
+import * as path from 'path';
+
+import {
+	SignatureHelp,
+	SignatureInformation,
+	TextDocument,
+	Files
+} from 'vscode-languageserver';
+
+import { IVariable } from '../types/symbols';
+import { ICache } from '../services/cache';
+
+import { parseDocument } from '../services/parser';
+import { getSymbolsCollection } from '../utils/symbols';
+import { getTextBeforePosition } from '../utils/string';
 
 interface IMixinEntry {
 	name: string;
@@ -34,18 +47,23 @@ function parseMixinAtLine(text: string): IMixinEntry {
 /**
  * Do Signature Help :)
  */
-export function doSignatureHelp(document: IServerDocument, symbolsList: ISymbols[]): Promise<SignatureHelp> {
+export function doSignatureHelp(document: TextDocument, offset: number, cache: ICache): Promise<SignatureHelp> {
 	const mixins: { name: string; parameters: IVariable[]; }[] = [];
 
 	// Skip suggestions if the text not include `(` or include `);`
-	if (document.textBeforeWord.endsWith(');') || !document.textBeforeWord.includes('(')) {
+	const textBeforeWord = getTextBeforePosition(document.getText(), offset);
+	if (textBeforeWord.endsWith(');') || !textBeforeWord.includes('(')) {
 		return null;
 	}
 
-	const entry = parseMixinAtLine(document.textBeforeWord);
+	const entry = parseMixinAtLine(textBeforeWord);
 	if (!entry.name) {
 		return null;
 	}
+
+	const documentPath = Files.uriToFilePath(document.uri);
+	const resource = parseDocument(document, path.dirname(documentPath), offset);
+	const symbolsList = getSymbolsCollection(cache).concat(resource.symbols);
 
 	symbolsList.forEach((symbols) => {
 		symbols.mixins.forEach((mixin) => {

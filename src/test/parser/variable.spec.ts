@@ -20,7 +20,7 @@ function parseText(text: string[]): INode {
 	return (<INode>ls.parseStylesheet(doc)).getChildren()[0];
 }
 
-describe('Variable', () => {
+describe('Parser/Variable', () => {
 
 	it('Simple', () => {
 		const ast = parseText([

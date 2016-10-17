@@ -2,14 +2,19 @@
 
 import * as assert from 'assert';
 
-import { ISymbols } from '../../types/symbols';
+import { TextDocument } from 'vscode-languageserver';
+
 import { ISettings } from '../../types/settings';
+
+import { getCacheStorage } from '../../services/cache';
 import { doCompletion } from '../../providers/completion';
 
-describe('Completion', () => {
+describe('Providers/Completion', () => {
 
 	it('doCompletion', () => {
-		const symbolsList: ISymbols[] = [{
+		const cache = getCacheStorage();
+
+		cache.set('test.less', {
 			document: 'test.less',
 			variables: [
 				{
@@ -40,7 +45,7 @@ describe('Completion', () => {
 				}
 			],
 			imports: []
-		}];
+		});
 
 		const settings = <ISettings>{
 			scannerExclude: [],
@@ -50,14 +55,19 @@ describe('Completion', () => {
 			suggestVariables: true
 		};
 
+		let document = null;
+
 		// Should show all suggestions
-		assert.equal(doCompletion('test.less', '@', symbolsList, settings).items.length, 2);
+		document = TextDocument.create('test.less', 'less', 1, '@');
+		assert.equal(doCompletion(document, 1, settings, cache).items.length, 2);
 
 		// Should discard Variables with Ruleset in values
-		assert.equal(doCompletion('test.less', '@{', symbolsList, settings).items.length, 1);
+		document = TextDocument.create('test.less', 'less', 1, '@{');
+		assert.equal(doCompletion(document, 2, settings, cache).items.length, 1);
 
 		// Should discard Mixins with dynamic selectors
-		assert.equal(doCompletion('test.less', '.', symbolsList, settings).items.length, 1);
+		document = TextDocument.create('test.less', 'less', 1, '.');
+		assert.equal(doCompletion(document, 1, settings, cache).items.length, 1);
 	});
 
 });

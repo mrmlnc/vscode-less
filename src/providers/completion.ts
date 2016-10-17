@@ -1,15 +1,22 @@
 'use strict';
 
+import * as path from 'path';
+
 import {
 	CompletionList,
-	CompletionItemKind
+	CompletionItemKind,
+	TextDocument,
+	Files
 } from 'vscode-languageserver';
 
-import { ISymbols, IMixin } from '../types/symbols';
+import { ICache } from '../services/cache';
+import { IMixin } from '../types/symbols';
 import { ISettings } from '../types/settings';
 
+import { parseDocument } from '../services/parser';
+import { getSymbolsCollection } from '../utils/symbols';
 import { getCurrentDocumentImports, getDocumentPath } from '../utils/document';
-import { getLimitedString } from '../utils/string';
+import { getCurrentWord, getLimitedString } from '../utils/string';
 
 /**
  * Return Mixin as string.
@@ -23,17 +30,26 @@ function makeMixinDocumentation(symbol: IMixin): string {
 /**
  * Do Completion :)
  */
-export function doCompletion(docPath: string, word: string, symbolsList: ISymbols[], settings: ISettings): CompletionList {
+export function doCompletion(document: TextDocument, offset: number, settings: ISettings, cache: ICache): CompletionList {
 	const completions = CompletionList.create([], false);
-	const documentImports = getCurrentDocumentImports(symbolsList, docPath);
+
+	const documentPath = Files.uriToFilePath(document.uri) || document.uri;
+	if (!documentPath) {
+		return null;
+	}
+
+	const resource = parseDocument(document, path.dirname(documentPath), offset);
+	const symbolsList = getSymbolsCollection(cache).concat(resource.symbols);
+	const documentImports = getCurrentDocumentImports(symbolsList, documentPath);
+	const currentWord = getCurrentWord(document.getText(), offset);
 
 	// is .@{NAME}-test { ... }
-	const isInterpolationVariable = word.endsWith('@{');
+	const isInterpolationVariable = currentWord.endsWith('@{');
 
-	if (settings.suggestVariables && (word === '@' || isInterpolationVariable)) {
+	if (settings.suggestVariables && (currentWord === '@' || isInterpolationVariable)) {
 		symbolsList.forEach((symbols) => {
-			const fsPath = getDocumentPath(docPath, symbols.document);
-			const isImplicitlyImport = symbols.document !== docPath && documentImports.indexOf(symbols.document) === -1;
+			const fsPath = getDocumentPath(documentPath, symbols.document);
+			const isImplicitlyImport = symbols.document !== documentPath && documentImports.indexOf(symbols.document) === -1;
 
 			symbols.variables.forEach((variable) => {
 				// Drop Variable if its value is RuleSet in interpolation
@@ -63,10 +79,10 @@ export function doCompletion(docPath: string, word: string, symbolsList: ISymbol
 				});
 			});
 		});
-	} else if (settings.suggestMixins && (word === '.' || word === '#')) {
+	} else if (settings.suggestMixins && (currentWord === '.' || currentWord === '#')) {
 		symbolsList.forEach((symbols) => {
-			const fsPath = getDocumentPath(docPath, symbols.document);
-			const isImplicitlyImport = symbols.document !== docPath && documentImports.indexOf(symbols.document) === -1;
+			const fsPath = getDocumentPath(documentPath, symbols.document);
+			const isImplicitlyImport = symbols.document !== documentPath && documentImports.indexOf(symbols.document) === -1;
 
 			symbols.mixins.forEach((mixin) => {
 				// Drop Mixin if his parents are calculated dynamically

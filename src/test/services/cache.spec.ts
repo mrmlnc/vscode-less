@@ -14,7 +14,7 @@ function makeSymbols(name: string): ISymbols {
 	};
 }
 
-describe('Cache', () => {
+describe('Services/Cache', () => {
 
 	it('Create cache', () => {
 		const cache = getCacheStorage();

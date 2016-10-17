@@ -6,9 +6,9 @@ import * as readdir from 'readdir-enhanced';
 import * as micromatch from 'micromatch';
 
 import { TextDocument } from 'vscode-languageserver';
+
 import { ICache } from './cache';
-import { INode } from '../types/nodes';
-import { IServerDocument, IDocumentCollection, ISymbols } from '../types/symbols';
+import { ISymbols } from '../types/symbols';
 import { ISettings } from '../types/settings';
 
 import { parseDocument } from './parser';
@@ -120,20 +120,8 @@ function scannerFilter(stat: readdir.IEntry, excludePatterns: string[]): boolean
 /**
  * Returns all Symbols in the opened workspase.
  */
-export function doScanner(root: string, cache: ICache, settings: ISettings, document?: IServerDocument): Promise<IDocumentCollection> {
-	let ast: INode = null;
+export function doScanner(root: string, cache: ICache, settings: ISettings): Promise<ISymbols[]> {
 	const listOfPromises = [];
-
-	if (document) {
-		const dir = path.dirname(document.path);
-		const resource = parseDocument(document.textDocument, dir, document.offset);
-
-		ast = resource.ast;
-
-		cache.drop(document.path);
-
-		listOfPromises.push(resource.symbols);
-	}
 
 	// Expand **/name to  **/name + **/name/** like VS Code
 	const excludePatterns = settings.scannerExclude;
@@ -145,6 +133,7 @@ export function doScanner(root: string, cache: ICache, settings: ISettings, docu
 		});
 	}
 
+	// Update Cahce for all files
 	return new Promise((resolve, reject) => {
 		const stream = readdir.readdirStreamStat(root, {
 			basePath: path.resolve(root),
@@ -158,11 +147,6 @@ export function doScanner(root: string, cache: ICache, settings: ISettings, docu
 
 		stream.on('file', (stat: readdir.IEntry) => {
 			const entry = makeEntryFile(stat.path, stat.ctime);
-
-			// Skip current Document
-			if (document && document.path === entry.filepath) {
-				return;
-			}
 
 			// Return Cache if it exists and not outdated
 			const cached = cache.get(entry.filepath);
@@ -196,10 +180,7 @@ export function doScanner(root: string, cache: ICache, settings: ISettings, docu
 				}
 			}
 
-			return resolve(<IDocumentCollection>{
-				node: ast,
-				symbols: projectSymbols.concat(importedSymbols)
-			});
+			return resolve(projectSymbols.concat(importedSymbols));
 		});
 	});
 }
