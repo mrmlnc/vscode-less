@@ -7,34 +7,6 @@ import { makeVariable } from './variable';
 import { getChildByType } from '../utils/ast';
 
 /**
- * Calculation chain of selectors to mixins.
- *
- * .a > .b {
- *   .c(@a) {
- *     // Mixin definition
- *   }
- * }
- *
- * selectors = '.a > .b'
- */
-export function getParentSelectors(node: INode): string {
-	node = node.getParent();
-	let selectors: string[] = [];
-
-	while (true) {
-		if (!node || node.type === NodeType.Stylesheet) {
-			break;
-		} else if (node.type === NodeType.Ruleset) {
-			selectors.unshift(node.getSelectors().getText());
-		}
-
-		node = node.getParent();
-	}
-
-	return selectors.length ? selectors.join(' ') : null;
-}
-
-/**
  * Returns information about Mixin Declaraion.
  */
 export function makeMixin(node: INode): IMixin {
@@ -50,8 +22,8 @@ export function makeMixin(node: INode): IMixin {
 	return {
 		name,
 		parameters: params,
-		parent: getParentSelectors(node),
-		offset: node.offset
+		line: 0,
+		column: 1
 	};
 }
 

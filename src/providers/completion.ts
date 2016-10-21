@@ -1,7 +1,5 @@
 'use strict';
 
-import * as path from 'path';
-
 import {
 	CompletionList,
 	CompletionItemKind,
@@ -15,7 +13,7 @@ import { ISettings } from '../types/settings';
 
 import { parseDocument } from '../services/parser';
 import { getSymbolsCollection } from '../utils/symbols';
-import { getCurrentDocumentImports, getDocumentPath } from '../utils/document';
+import { getCurrentDocumentImportPaths, getDocumentPath } from '../utils/document';
 import { getCurrentWord, getLimitedString } from '../utils/string';
 
 /**
@@ -38,9 +36,9 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 		return null;
 	}
 
-	const resource = parseDocument(document, path.dirname(documentPath), offset);
+	const resource = parseDocument(document, offset);
 	const symbolsList = getSymbolsCollection(cache).concat(resource.symbols);
-	const documentImports = getCurrentDocumentImports(symbolsList, documentPath);
+	const documentImports = getCurrentDocumentImportPaths(symbolsList, documentPath);
 	const currentWord = getCurrentWord(document.getText(), offset);
 
 	// is .@{NAME}-test { ... }
@@ -85,17 +83,6 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 			const isImplicitlyImport = symbols.document !== documentPath && documentImports.indexOf(symbols.document) === -1;
 
 			symbols.mixins.forEach((mixin) => {
-				// Drop Mixin if his parents are calculated dynamically
-				if (/[&@{}]/.test(mixin.parent)) {
-					return;
-				}
-
-				// Make full name
-				let fullName = mixin.name;
-				if (mixin.parent) {
-					fullName = mixin.parent + ' ' + fullName;
-				}
-
 				// Add 'implicitly' prefix for Path if the file imported implicitly
 				let detailPath = fsPath;
 				if (isImplicitlyImport) {
@@ -103,11 +90,11 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 				}
 
 				completions.items.push({
-					label: fullName,
+					label: mixin.name,
 					kind: CompletionItemKind.Function,
 					detail: detailPath,
 					documentation: makeMixinDocumentation(mixin),
-					insertText: fullName
+					insertText: mixin.name
 				});
 			});
 		});

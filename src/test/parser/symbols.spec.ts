@@ -23,14 +23,14 @@ function parseText(text: string[]): INode {
 describe('Parser/Symbols', () => {
 
 	it('findSymbols - Variables', () => {
-		const ast = parseText([
+		const text = [
 			'@a: 1;',
 			'.a {',
 			'  @b: 2;',
 			'}'
-		]);
+		].join('\n');
 
-		const { variables } = findSymbols(ast);
+		const { variables } = findSymbols(text);
 
 		assert.equal(variables.length, 1);
 
@@ -39,7 +39,7 @@ describe('Parser/Symbols', () => {
 	});
 
 	it('findSymbols - Mixins', () => {
-		const ast = parseText([
+		const text = [
 			'.a() {}',
 			'.a {',
 			'  .b() {}',
@@ -47,30 +47,32 @@ describe('Parser/Symbols', () => {
 			'.c() {',
 			'  .d() {}',
 			'}'
-		]);
+		].join('\n');
 
-		const { mixins } = findSymbols(ast);
+		const { mixins } = findSymbols(text);
 
-		assert.equal(mixins.length, 3);
+		assert.equal(mixins.length, 2);
 
 		assert.equal(mixins[0].name, '.a');
-		assert.equal(mixins[1].name, '.b');
-		assert.equal(mixins[2].name, '.c');
+		assert.equal(mixins[1].name, '.c');
 	});
 
 	it('findSymbols - Imports', () => {
-		const ast = parseText([
+		const text = [
 			'@import "styles.less";',
 			'@import "styles.css";',
 			'@import "@{styles}.less";',
 			'@import "styles/**/*.less";'
-		]);
+		].join('\n');
 
-		const { imports } = findSymbols(ast);
+		const { imports } = findSymbols(text);
 
-		assert.equal(imports.length, 1);
+		assert.equal(imports.length, 4);
 
-		assert.equal(imports[0], 'styles.less');
+		assert.equal(imports[0].filepath, 'styles.less');
+		assert.equal(imports[1].filepath, 'styles.css');
+		assert.equal(imports[2].filepath, '@{styles}.less');
+		assert.equal(imports[3].filepath, 'styles/**/*.less');
 	});
 
 	it('findSymbolsAtOffset - Variables', () => {

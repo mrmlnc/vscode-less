@@ -18,7 +18,7 @@ describe('Services/Parser', () => {
 			'.mixin(@a: 1, @b) {};'
 		]);
 
-		const { symbols } = parseDocument(doc, './', null);
+		const { symbols } = parseDocument(doc, null);
 
 		// Variables
 		assert.equal(symbols.variables.length, 1);
@@ -48,7 +48,7 @@ describe('Services/Parser', () => {
 			'.mixin(@a: 1, @b) {};'
 		]);
 
-		const { symbols } = parseDocument(doc, './', 36);
+		const { symbols } = parseDocument(doc, 36);
 
 		// Variables
 		assert.equal(symbols.variables.length, 3);

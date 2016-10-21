@@ -20,28 +20,22 @@ describe('Providers/Completion', () => {
 				{
 					name: '@test',
 					value: null,
-					offset: 0,
-					mixin: null
+					line: 0,
+					column: 1
 				},
 				{
 					name: '@skip',
 					value: '{ content: ""; }',
-					offset: 0,
-					mixin: null
+					line: 0,
+					column: 1
 				}
 			],
 			mixins: [
 				{
 					name: '.test',
 					parameters: [],
-					parent: '',
-					offset: 0
-				},
-				{
-					name: '.skip',
-					parameters: [],
-					parent: '.a &',
-					offset: 0
+					line: 0,
+					column: 1
 				}
 			],
 			imports: []

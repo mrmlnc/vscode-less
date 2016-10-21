@@ -1,7 +1,5 @@
 'use strict';
 
-import * as path from 'path';
-
 import {
 	Hover,
 	MarkedString,
@@ -15,7 +13,7 @@ import { ICache } from '../services/cache';
 
 import { parseDocument } from '../services/parser';
 import { getSymbolsCollection } from '../utils/symbols';
-import { getCurrentDocumentImports, getDocumentPath } from '../utils/document';
+import { getCurrentDocumentImportPaths, getDocumentPath } from '../utils/document';
 import { getLimitedString } from '../utils/string';
 import { getParentNodeByType, getNodeAtOffset } from '../utils/ast';
 
@@ -39,7 +37,6 @@ function makeVariableAsMarkedString(symbol: IVariable, fsPath: string, suffix: s
  */
 function makeMixinAsMarkedString(symbol: IMixin, fsPath: string, suffix: string): MarkedString {
 	const args = symbol.parameters.map((item) => `${item.name}: ${item.value}`).join(', ');
-	const fullName = symbol.parent ? symbol.parent + ' ' + symbol.name : symbol.name;
 
 	if (fsPath !== 'current') {
 		suffix = `\n@import "${fsPath}"` + suffix;
@@ -47,7 +44,7 @@ function makeMixinAsMarkedString(symbol: IMixin, fsPath: string, suffix: string)
 
 	return {
 		language: 'less',
-		value: fullName + `(${args}) {\u2026}` + suffix
+		value: symbol.name + `(${args}) {\u2026}` + suffix
 	};
 }
 
@@ -90,7 +87,7 @@ export function doHover(document: TextDocument, offset: number, cache: ICache): 
 		return null;
 	}
 
-	const resource = parseDocument(document, path.dirname(documentPath), offset);
+	const resource = parseDocument(document, offset);
 	const hoverNode = getNodeAtOffset(resource.ast, offset);
 	if (!hoverNode || !hoverNode.type) {
 		return;
@@ -119,7 +116,7 @@ export function doHover(document: TextDocument, offset: number, cache: ICache): 
 	}
 
 	// Imports for current document
-	const documentImports = getCurrentDocumentImports(symbolsList, documentPath);
+	const documentImports = getCurrentDocumentImportPaths(symbolsList, documentPath);
 
 	// All symbols
 	const symbol = getSymbol(symbolsList, identifier, documentPath);

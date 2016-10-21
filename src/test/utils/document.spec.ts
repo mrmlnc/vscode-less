@@ -3,7 +3,7 @@
 import * as assert from 'assert';
 
 import { ISymbols } from '../../types/symbols';
-import { getCurrentDocumentImports, getDocumentPath } from '../../utils/document';
+import { getCurrentDocumentImportPaths, getDocumentPath } from '../../utils/document';
 
 describe('Utils/Document', () => {
 
@@ -13,17 +13,37 @@ describe('Utils/Document', () => {
 				document: 'a.less',
 				mixins: [],
 				variables: [],
-				imports: ['b.less']
+				imports: [
+					{
+						filepath: 'b.less',
+						css: false,
+						modes: [],
+						dynamic: false
+					}
+				]
 			},
 			{
 				document: 'b.less',
 				mixins: [],
 				variables: [],
-				imports: ['a.less', 'c.less']
+				imports: [
+					{
+						filepath: 'a.less',
+						css: false,
+						modes: [],
+						dynamic: false
+					},
+					{
+						filepath: 'c.less',
+						css: false,
+						modes: [],
+						dynamic: false
+					}
+				]
 			}
 		];
 
-		const imports = getCurrentDocumentImports(symbolsList, 'b.less');
+		const imports = getCurrentDocumentImportPaths(symbolsList, 'b.less');
 
 		assert.equal(imports.length, 2);
 	});

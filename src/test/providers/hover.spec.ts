@@ -31,16 +31,16 @@ describe('Providers/Hover', () => {
 				{
 					name: '@test',
 					value: '1',
-					offset: 0,
-					mixin: null
+					line: 0,
+					column: 1
 				}
 			],
 			mixins: [
 				{
 					name: '.test',
 					parameters: [],
-					parent: '',
-					offset: 0
+					line: 0,
+					column: 1
 				}
 			],
 			imports: []
@@ -74,14 +74,14 @@ describe('Providers/Hover', () => {
 				{
 					name: '.a',
 					parameters: [],
-					parent: null,
-					offset: 0
+					line: 0,
+					column: 1
 				},
 				{
 					name: '.b',
 					parameters: [],
-					parent: null,
-					offset: 0
+					line: 0,
+					column: 1
 				}
 			],
 			imports: []

@@ -1,12 +1,9 @@
 'use strict';
 
-import * as path from 'path';
-
 import {
 	SignatureHelp,
 	SignatureInformation,
-	TextDocument,
-	Files
+	TextDocument
 } from 'vscode-languageserver';
 
 import { IVariable } from '../types/symbols';
@@ -61,17 +58,14 @@ export function doSignatureHelp(document: TextDocument, offset: number, cache: I
 		return null;
 	}
 
-	const documentPath = Files.uriToFilePath(document.uri);
-	const resource = parseDocument(document, path.dirname(documentPath), offset);
+	const resource = parseDocument(document, offset);
 	const symbolsList = getSymbolsCollection(cache).concat(resource.symbols);
 
 	symbolsList.forEach((symbols) => {
 		symbols.mixins.forEach((mixin) => {
-			const mixinName = mixin.parent ? mixin.parent + ' ' + mixin.name : mixin.name;
-
 			if (entry.name === mixin.name && mixin.parameters.length >= entry.parameters.length) {
 				mixins.push({
-					name: mixinName,
+					name: mixin.name,
 					parameters: mixin.parameters
 				});
 			}

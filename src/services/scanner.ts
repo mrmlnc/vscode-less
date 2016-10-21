@@ -32,7 +32,7 @@ interface IDocument {
 function makeSymbolsForDocument(cache: ICache, entry: IFile): Promise<ISymbols> {
 	return readFile(entry.filepath).then((data) => {
 		const doc = TextDocument.create(entry.filepath, 'less', 1, data);
-		const { symbols } = parseDocument(doc, entry.dir);
+		const { symbols } = parseDocument(doc);
 
 		symbols.ctime = entry.ctime;
 		cache.set(entry.filepath, symbols);
@@ -67,15 +67,19 @@ function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], settings: 
 		}
 
 		list.forEach((item) => {
-			item.imports.forEach((filepath) => {
+			item.imports.forEach((x) => {
+				// Not include dynamic paths
+				if (x.dynamic || x.css) {
+					return;
+				}
 				// Not include in list Symbols from parent Symbols
 				for (let i = 0; i < symbolsList.length; i++) {
-					if (symbolsList[i].document === filepath) {
+					if (symbolsList[i].document === x.filepath) {
 						return;
 					}
 				}
 
-				importedFiles.push(filepath);
+				importedFiles.push(x.filepath);
 			});
 		});
 
