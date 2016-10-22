@@ -36,6 +36,9 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 		return null;
 	}
 
+	// Drop cache for current document
+	cache.drop(documentPath);
+
 	const resource = parseDocument(document, offset);
 	const symbolsList = getSymbolsCollection(cache).concat(resource.symbols);
 	const documentImports = getCurrentDocumentImportPaths(symbolsList, documentPath);

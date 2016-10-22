@@ -14,7 +14,7 @@ describe('Providers/Completion', () => {
 	it('doCompletion', () => {
 		const cache = getCacheStorage();
 
-		cache.set('test.less', {
+		cache.set('hide.less', {
 			document: 'test.less',
 			variables: [
 				{

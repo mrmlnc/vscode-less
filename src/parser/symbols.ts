@@ -46,10 +46,8 @@ export function findSymbolsAtOffset(parsedDocument: INode, offset: number): ISym
 		};
 	}
 
-	while (true) {
-		if (!node || node.type === NodeType.Stylesheet) {
-			break;
-		} else if (node.type === NodeType.MixinDeclaration) {
+	while (node && node.type !== NodeType.Stylesheet) {
+		if (node.type === NodeType.MixinDeclaration) {
 			variables.push(...makeMixin(node).parameters);
 		} else if (node.type === NodeType.Ruleset || node.type === NodeType.Declarations) {
 			variables.push(...makeVariableCollection(node));
