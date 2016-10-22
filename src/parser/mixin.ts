@@ -22,8 +22,7 @@ export function makeMixin(node: INode): IMixin {
 	return {
 		name,
 		parameters: params,
-		line: 0,
-		column: 1
+		offset: node.offset
 	};
 }
 

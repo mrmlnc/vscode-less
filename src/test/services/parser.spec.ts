@@ -15,7 +15,7 @@ describe('Services/Parser', () => {
 	it('Find symbols without offset position', () => {
 		const doc = parseText([
 			'@name: "value";',
-			'.mixin(@a: 1, @b) {};'
+			'.mixin(@a: 1, @b) {}'
 		]);
 
 		const { symbols } = parseDocument(doc, null);
@@ -45,7 +45,7 @@ describe('Services/Parser', () => {
 	it('Find symbols with offset position', () => {
 		const doc = parseText([
 			'@name: "value";',
-			'.mixin(@a: 1, @b) {};'
+			'.mixin(@a: 1, @b) {}'
 		]);
 
 		const { symbols } = parseDocument(doc, 36);

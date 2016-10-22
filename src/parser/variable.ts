@@ -20,8 +20,7 @@ export function makeVariable(node: INode, fromMixin: string = null): IVariable {
 		name: node.getName(),
 		value,
 		mixin: fromMixin,
-		column: 1,
-		line: 0
+		offset: node.offset
 	};
 }
 
