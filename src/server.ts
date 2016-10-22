@@ -96,14 +96,14 @@ connection.onHover((textDocumentPosition) => {
 		const document = documents.get(textDocumentPosition.textDocument.uri);
 		const offset = document.offsetAt(textDocumentPosition.position);
 
-		return doHover(document, offset, cache);
+		return doHover(document, offset, cache, settings);
 	});
 });
 
 connection.onSignatureHelp((textDocumentPosition) => {
 	const document = documents.get(textDocumentPosition.textDocument.uri);
 	const offset = document.offsetAt(textDocumentPosition.position);
-	return doSignatureHelp(document, offset, cache);
+	return doSignatureHelp(document, offset, cache, settings);
 });
 
 // Dispose cache

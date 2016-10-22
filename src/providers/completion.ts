@@ -39,7 +39,7 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 	// Drop cache for current document
 	cache.drop(documentPath);
 
-	const resource = parseDocument(document, offset);
+	const resource = parseDocument(document, offset, settings);
 	const symbolsList = getSymbolsCollection(cache).concat(resource.symbols);
 	const documentImports = getCurrentDocumentImportPaths(symbolsList, documentPath);
 	const currentWord = getCurrentWord(document.getText(), offset);

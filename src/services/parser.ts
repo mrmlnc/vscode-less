@@ -7,6 +7,7 @@ import { getLESSLanguageService } from 'vscode-css-languageservice';
 
 import { INode } from '../types/nodes';
 import { IDocument, ISymbols } from '../types/symbols';
+import { ISettings } from '../types/settings';
 
 import { findSymbols, findSymbolsAtOffset } from '../parser/symbols';
 import { getNodeAtOffset } from '../utils/ast';
@@ -22,8 +23,23 @@ ls.configure({
 /**
  * Returns all Symbols in a single document.
  */
-export function parseDocument(document: TextDocument, offset: number = null): IDocument {
-	let symbols: ISymbols = findSymbols(document.getText());
+export function parseDocument(document: TextDocument, offset: number = null, settings: ISettings): IDocument {
+	let symbols: ISymbols;
+	try {
+		symbols = findSymbols(document.getText());
+	} catch (err) {
+		if (settings.showErrors) {
+			throw err;
+		}
+
+		symbols = {
+			variables: [],
+			mixins: [],
+			imports: []
+		};
+	}
+
+	// Set path for document in Symbols collection
 	symbols.document = Files.uriToFilePath(document.uri) || document.uri;
 
 	let ast: INode = null;

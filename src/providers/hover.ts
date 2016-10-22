@@ -9,6 +9,7 @@ import {
 
 import { NodeType } from '../types/nodes';
 import { ISymbols, IVariable, IMixin } from '../types/symbols';
+import { ISettings } from '../types/settings';
 import { ICache } from '../services/cache';
 
 import { parseDocument } from '../services/parser';
@@ -81,13 +82,13 @@ function getSymbol(symbolList: ISymbols[], identifier: any, currentPath: string)
 /**
  * Do Hover :)
  */
-export function doHover(document: TextDocument, offset: number, cache: ICache): Hover {
+export function doHover(document: TextDocument, offset: number, cache: ICache, settings: ISettings): Hover {
 	const documentPath = Files.uriToFilePath(document.uri) || document.uri;
 	if (!documentPath) {
 		return null;
 	}
 
-	const resource = parseDocument(document, offset);
+	const resource = parseDocument(document, offset, settings);
 	const hoverNode = getNodeAtOffset(resource.ast, offset);
 	if (!hoverNode || !hoverNode.type) {
 		return;

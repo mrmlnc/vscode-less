@@ -18,15 +18,7 @@ import { getNodeAtOffset } from '../utils/ast';
  * Get all suggestions in file.
  */
 export function findSymbols(text: string): ISymbols {
-	try {
-		return parseSymbols(text);
-	} catch (err) {
-		return {
-			variables: [],
-			mixins: [],
-			imports: []
-		};
-	}
+	return parseSymbols(text);
 }
 
 /**

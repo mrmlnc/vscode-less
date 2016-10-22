@@ -29,10 +29,10 @@ interface IDocument {
 /**
  * Returns Symbols for specified document.
  */
-function makeSymbolsForDocument(cache: ICache, entry: IFile): Promise<ISymbols> {
+function makeSymbolsForDocument(cache: ICache, entry: IFile, settings: ISettings): Promise<ISymbols> {
 	return readFile(entry.filepath).then((data) => {
 		const doc = TextDocument.create(entry.filepath, 'less', 1, data);
-		const { symbols } = parseDocument(doc);
+		const { symbols } = parseDocument(doc, null, settings);
 
 		symbols.ctime = entry.ctime;
 		cache.set(entry.filepath, symbols);
@@ -96,7 +96,7 @@ function scannerImportedFiles(cache: ICache, symbolsList: ISymbols[], settings: 
 			return statFile(filepath).then((stat) => {
 				const entry = makeEntryFile(filepath, stat.ctime);
 
-				return makeSymbolsForDocument(cache, entry);
+				return makeSymbolsForDocument(cache, entry, settings);
 			});
 		})).then((resultList) => {
 			nesting++;
@@ -159,7 +159,7 @@ export function doScanner(root: string, cache: ICache, settings: ISettings): Pro
 				return;
 			}
 
-			listOfPromises.push(makeSymbolsForDocument(cache, entry));
+			listOfPromises.push(makeSymbolsForDocument(cache, entry, settings));
 		});
 
 		stream.on('error', (err) => {
