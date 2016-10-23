@@ -7,6 +7,7 @@ import {
 	Files
 } from 'vscode-languageserver';
 
+import { INode, NodeType } from '../types/nodes';
 import { ICache } from '../services/cache';
 import { IMixin } from '../types/symbols';
 import { ISettings } from '../types/settings';
@@ -21,8 +22,28 @@ import { getCurrentWord, getLimitedString, getTextBeforePosition } from '../util
  */
 function makeMixinDocumentation(symbol: IMixin): string {
 	const args = symbol.parameters.map((item) => `${item.name}: ${item.value}`).join(', ');
-
 	return `${symbol.name}(${args}) {\u2026}`;
+}
+
+/**
+ * Skip suggestions for parent Mixin inside Mixins.
+ */
+function mixinSuggestionsFilter(mixin: IMixin, node: INode): boolean {
+	if (!node) {
+		return false;
+	}
+
+	while (node.type !== NodeType.Stylesheet) {
+		if (node.type === NodeType.MixinDeclaration) {
+			const identifier = node.getIdentifier();
+			if (identifier && identifier.getText() === mixin.name) {
+				return true;
+			}
+		}
+		node = node.getParent();
+	}
+
+	return false;
 }
 
 /**
@@ -92,6 +113,10 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 			const isImplicitlyImport = symbols.document !== documentPath && documentImports.indexOf(symbols.document) === -1;
 
 			symbols.mixins.forEach((mixin) => {
+				if (mixinSuggestionsFilter(mixin, resource.ast)) {
+					return;
+				}
+
 				// Add 'implicitly' prefix for Path if the file imported implicitly
 				let detailPath = fsPath;
 				if (isImplicitlyImport) {

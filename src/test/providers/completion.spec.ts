@@ -63,6 +63,10 @@ describe('Providers/Completion', () => {
 		// Should discard suggestions inside comments
 		document = TextDocument.create('test.less', 'less', 1, '// @');
 		assert.equal(doCompletion(document, 4, settings, cache).items.length, 0);
+
+		// Should discard suggestions for parent Mixins in Mixin
+		document = TextDocument.create('test.less', 'less', 1, '.test() { . }');
+		assert.equal(doCompletion(document, 11, settings, cache).items.length, 0);
 	});
 
 });
