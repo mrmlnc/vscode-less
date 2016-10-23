@@ -45,9 +45,9 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 	const currentWord = getCurrentWord(document.getText(), offset);
 
 	// is .@{NAME}-test { ... }
-	const isInterpolationVariable = currentWord.endsWith('@{');
+	const isInterpolationVariable = currentWord.indexOf('@{') !== -1;
 
-	if (settings.suggestVariables && (currentWord === '@' || isInterpolationVariable)) {
+	if (settings.suggestVariables && (currentWord.startsWith('@') || isInterpolationVariable)) {
 		symbolsList.forEach((symbols) => {
 			const fsPath = getDocumentPath(documentPath, symbols.document);
 			const isImplicitlyImport = symbols.document !== documentPath && documentImports.indexOf(symbols.document) === -1;
@@ -73,14 +73,14 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 
 				completions.items.push({
 					// If variable interpolation, then remove the @ character from label
-					label: isInterpolationVariable ? variable.name.slice(-1) : variable.name,
+					label: isInterpolationVariable ? variable.name.substr(1) : variable.name,
 					kind: CompletionItemKind.Variable,
 					detail: detailText,
 					documentation: getLimitedString(variable.value)
 				});
 			});
 		});
-	} else if (settings.suggestMixins && (currentWord === '.' || currentWord === '#')) {
+	} else if (settings.suggestMixins && (currentWord.startsWith('.') || currentWord.startsWith('#'))) {
 		symbolsList.forEach((symbols) => {
 			const fsPath = getDocumentPath(documentPath, symbols.document);
 			const isImplicitlyImport = symbols.document !== documentPath && documentImports.indexOf(symbols.document) === -1;
