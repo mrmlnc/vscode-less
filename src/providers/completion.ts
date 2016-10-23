@@ -14,7 +14,7 @@ import { ISettings } from '../types/settings';
 import { parseDocument } from '../services/parser';
 import { getSymbolsCollection } from '../utils/symbols';
 import { getCurrentDocumentImportPaths, getDocumentPath } from '../utils/document';
-import { getCurrentWord, getLimitedString } from '../utils/string';
+import { getCurrentWord, getLimitedString, getTextBeforePosition } from '../utils/string';
 
 /**
  * Return Mixin as string.
@@ -43,9 +43,15 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 	const symbolsList = getSymbolsCollection(cache).concat(resource.symbols);
 	const documentImports = getCurrentDocumentImportPaths(symbolsList, documentPath);
 	const currentWord = getCurrentWord(document.getText(), offset);
+	const textBeforeWord = getTextBeforePosition(document.getText(), offset);
 
 	// is .@{NAME}-test { ... }
 	const isInterpolationVariable = currentWord.indexOf('@{') !== -1;
+
+	// Bad idea: Drop suggestions inside `//` and `/* */` comments
+	if (/^(\/(\/|\*)|\*)/.test(textBeforeWord.trim())) {
+		return null;
+	}
 
 	if (settings.suggestVariables && (currentWord.startsWith('@') || isInterpolationVariable)) {
 		symbolsList.forEach((symbols) => {
