@@ -40,7 +40,7 @@ describe('Services/Scanner', () => {
 		};
 
 		return doScanner('./fixtures', cache, options).then((symbols) => {
-			assert.equal(symbols.length, 5);
+			assert.equal(symbols.length, 7);
 		});
 	});
 

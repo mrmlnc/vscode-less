@@ -42,6 +42,20 @@ export function parseDocument(document: TextDocument, offset: number = null, set
 	// Set path for document in Symbols collection
 	symbols.document = Files.uriToFilePath(document.uri) || document.uri;
 
+	// Get `<reference *> comments from document
+	const references = document.getText().match(/\/\/\s*<reference\s*path=["'](.*)['"]\s*\/?>/g);
+	if (references) {
+		references.forEach((x) => {
+			symbols.imports.push({
+				css: false,
+				dynamic: false,
+				filepath: /\/\/\s*<reference\s*path=["'](.*)['"]\s*\/?>/.exec(x)[1],
+				modes: [],
+				reference: true
+			});
+		});
+	}
+
 	let ast: INode = null;
 	if (offset) {
 		ast = <INode>ls.parseStylesheet(document);

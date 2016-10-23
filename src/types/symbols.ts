@@ -12,7 +12,7 @@ export interface IMixin extends IMix {
 }
 
 export interface IImport extends IImp {
-  // :)
+	reference?: boolean;
 }
 
 export interface ISymbols {
