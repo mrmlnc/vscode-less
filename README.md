@@ -39,6 +39,10 @@ Just install the plugin and use it.
 
 ![Less Intellisense VS Code](https://cloud.githubusercontent.com/assets/7034281/19413681/a3789ed8-933c-11e6-81ea-0fd853bb5a00.png)
 
+**Signature Help**
+
+![Less Intellisense VS Code](https://cloud.githubusercontent.com/assets/7034281/19627576/753228e8-9952-11e6-9d10-6089b878a118.png)
+
 ## Supported settings
 
 **less.scannerDepth**
