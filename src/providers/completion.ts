@@ -50,7 +50,7 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 
 	// Bad idea: Drop suggestions inside `//` and `/* */` comments
 	if (/^(\/(\/|\*)|\*)/.test(textBeforeWord.trim())) {
-		return null;
+		return completions;
 	}
 
 	if (settings.suggestVariables && (currentWord.startsWith('@') || isInterpolationVariable)) {

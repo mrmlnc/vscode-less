@@ -59,6 +59,10 @@ describe('Providers/Completion', () => {
 		// Should discard Mixins with dynamic selectors
 		document = TextDocument.create('test.less', 'less', 1, '.');
 		assert.equal(doCompletion(document, 1, settings, cache).items.length, 1);
+
+		// Should discard suggestions inside comments
+		document = TextDocument.create('test.less', 'less', 1, '// @');
+		assert.equal(doCompletion(document, 4, settings, cache).items.length, 0);
 	});
 
 });
