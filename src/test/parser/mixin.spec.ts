@@ -35,7 +35,6 @@ describe('Parser/Mixin', () => {
 
 		assert.equal(mixin.name, '.a');
 		assert.equal(mixin.parameters.length, 0);
-		assert.equal(mixin.parent, null);
 	});
 
 	it('Parameters', () => {
@@ -54,8 +53,6 @@ describe('Parser/Mixin', () => {
 
 		assert.equal(mixin.parameters[1].name, '@b');
 		assert.equal(mixin.parameters[1].value, null);
-
-		assert.equal(mixin.parent, null);
 	});
 
 	it('Nesting', (done) => {
@@ -78,8 +75,6 @@ describe('Parser/Mixin', () => {
 
 				assert.equal(mixin.parameters[1].name, '@b');
 				assert.equal(mixin.parameters[1].value, null);
-
-				assert.equal(mixin.parent, '.a-@{test}');
 
 				done();
 			}

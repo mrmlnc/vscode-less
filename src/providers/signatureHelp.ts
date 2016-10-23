@@ -1,15 +1,13 @@
 'use strict';
 
-import * as path from 'path';
-
 import {
 	SignatureHelp,
 	SignatureInformation,
-	TextDocument,
-	Files
+	TextDocument
 } from 'vscode-languageserver';
 
 import { IVariable } from '../types/symbols';
+import { ISettings } from '../types/settings';
 import { ICache } from '../services/cache';
 
 import { parseDocument } from '../services/parser';
@@ -47,7 +45,7 @@ function parseMixinAtLine(text: string): IMixinEntry {
 /**
  * Do Signature Help :)
  */
-export function doSignatureHelp(document: TextDocument, offset: number, cache: ICache): Promise<SignatureHelp> {
+export function doSignatureHelp(document: TextDocument, offset: number, cache: ICache, settings: ISettings): Promise<SignatureHelp> {
 	const mixins: { name: string; parameters: IVariable[]; }[] = [];
 
 	// Skip suggestions if the text not include `(` or include `);`
@@ -61,17 +59,14 @@ export function doSignatureHelp(document: TextDocument, offset: number, cache: I
 		return null;
 	}
 
-	const documentPath = Files.uriToFilePath(document.uri);
-	const resource = parseDocument(document, path.dirname(documentPath), offset);
+	const resource = parseDocument(document, offset, settings);
 	const symbolsList = getSymbolsCollection(cache).concat(resource.symbols);
 
 	symbolsList.forEach((symbols) => {
 		symbols.mixins.forEach((mixin) => {
-			const mixinName = mixin.parent ? mixin.parent + ' ' + mixin.name : mixin.name;
-
 			if (entry.name === mixin.name && mixin.parameters.length >= entry.parameters.length) {
 				mixins.push({
-					name: mixinName,
+					name: mixin.name,
 					parameters: mixin.parameters
 				});
 			}

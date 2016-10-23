@@ -14,33 +14,24 @@ describe('Providers/Completion', () => {
 	it('doCompletion', () => {
 		const cache = getCacheStorage();
 
-		cache.set('test.less', {
+		cache.set('hide.less', {
 			document: 'test.less',
 			variables: [
 				{
 					name: '@test',
 					value: null,
-					offset: 0,
-					mixin: null
+					offset: 0
 				},
 				{
 					name: '@skip',
 					value: '{ content: ""; }',
-					offset: 0,
-					mixin: null
+					offset: 0
 				}
 			],
 			mixins: [
 				{
 					name: '.test',
 					parameters: [],
-					parent: '',
-					offset: 0
-				},
-				{
-					name: '.skip',
-					parameters: [],
-					parent: '.a &',
 					offset: 0
 				}
 			],
@@ -68,6 +59,14 @@ describe('Providers/Completion', () => {
 		// Should discard Mixins with dynamic selectors
 		document = TextDocument.create('test.less', 'less', 1, '.');
 		assert.equal(doCompletion(document, 1, settings, cache).items.length, 1);
+
+		// Should discard suggestions inside comments
+		document = TextDocument.create('test.less', 'less', 1, '// @');
+		assert.equal(doCompletion(document, 4, settings, cache).items.length, 0);
+
+		// Should discard suggestions for parent Mixins in Mixin
+		document = TextDocument.create('test.less', 'less', 1, '.test() { . }');
+		assert.equal(doCompletion(document, 11, settings, cache).items.length, 0);
 	});
 
 });

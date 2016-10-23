@@ -58,10 +58,7 @@ connection.onInitialize((params: InitializeParams): Promise<InitializeResult> =>
 		return <InitializeResult>{
 			capabilities: {
 				textDocumentSync: documents.syncKind,
-				completionProvider: {
-					resolveProvider: false,
-					triggerCharacters: ['.', '#', '@', '{']
-				},
+				completionProvider: { resolveProvider: false },
 				signatureHelpProvider: {
 					triggerCharacters: ['(', ',', ';']
 				},
@@ -80,30 +77,29 @@ connection.onDidChangeConfiguration((params) => {
 	settings = params.settings.less;
 });
 
-connection.onCompletion((textDocumentPosition) => {
+// Update cache
+connection.onDidChangeWatchedFiles((x) => {
 	return doScanner(workspaceRoot, cache, settings).then((symbols) => {
-		invalidateCacheStorage(cache, symbols);
-
-		const document = documents.get(textDocumentPosition.textDocument.uri);
-		const offset = document.offsetAt(textDocumentPosition.position);
-		return doCompletion(document, offset, settings, cache);
+		return invalidateCacheStorage(cache, symbols);
 	});
 });
 
-connection.onHover((textDocumentPosition) => {
-	return doScanner(workspaceRoot, cache, settings).then((symbols) => {
-		invalidateCacheStorage(cache, symbols);
-		const document = documents.get(textDocumentPosition.textDocument.uri);
-		const offset = document.offsetAt(textDocumentPosition.position);
+connection.onCompletion((textDocumentPosition) => {
+	const document = documents.get(textDocumentPosition.textDocument.uri);
+	const offset = document.offsetAt(textDocumentPosition.position);
+	return doCompletion(document, offset, settings, cache);
+});
 
-		return doHover(document, offset, cache);
-	});
+connection.onHover((textDocumentPosition) => {
+	const document = documents.get(textDocumentPosition.textDocument.uri);
+	const offset = document.offsetAt(textDocumentPosition.position);
+	return doHover(document, offset, cache, settings);
 });
 
 connection.onSignatureHelp((textDocumentPosition) => {
 	const document = documents.get(textDocumentPosition.textDocument.uri);
 	const offset = document.offsetAt(textDocumentPosition.position);
-	return doSignatureHelp(document, offset, cache);
+	return doSignatureHelp(document, offset, cache, settings);
 });
 
 // Dispose cache

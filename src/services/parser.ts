@@ -6,7 +6,8 @@ import { TextDocument, Files } from 'vscode-languageserver';
 import { getLESSLanguageService } from 'vscode-css-languageservice';
 
 import { INode } from '../types/nodes';
-import { IDocument } from '../types/symbols';
+import { IDocument, ISymbols } from '../types/symbols';
+import { ISettings } from '../types/settings';
 
 import { findSymbols, findSymbolsAtOffset } from '../parser/symbols';
 import { getNodeAtOffset } from '../utils/ast';
@@ -22,21 +23,55 @@ ls.configure({
 /**
  * Returns all Symbols in a single document.
  */
-export function parseDocument(document: TextDocument, dir: string, offset: number = null): IDocument {
-	const ast = <INode>ls.parseStylesheet(document);
+export function parseDocument(document: TextDocument, offset: number = null, settings: ISettings): IDocument {
+	let symbols: ISymbols;
+	try {
+		symbols = findSymbols(document.getText());
+	} catch (err) {
+		if (settings.showErrors) {
+			throw err;
+		}
 
-	let symbols = findSymbols(ast);
+		symbols = {
+			variables: [],
+			mixins: [],
+			imports: []
+		};
+	}
+
+	// Set path for document in Symbols collection
 	symbols.document = Files.uriToFilePath(document.uri) || document.uri;
 
+	// Get `<reference *> comments from document
+	const references = document.getText().match(/\/\/\s*<reference\s*path=["'](.*)['"]\s*\/?>/g);
+	if (references) {
+		references.forEach((x) => {
+			symbols.imports.push({
+				css: false,
+				dynamic: false,
+				filepath: /\/\/\s*<reference\s*path=["'](.*)['"]\s*\/?>/.exec(x)[1],
+				modes: [],
+				reference: true
+			});
+		});
+	}
+
+	let ast: INode = null;
 	if (offset) {
+		ast = <INode>ls.parseStylesheet(document);
+
 		const scopedSymbols = findSymbolsAtOffset(ast, offset);
 
 		symbols.variables = symbols.variables.concat(scopedSymbols.variables);
 		symbols.mixins = symbols.mixins.concat(scopedSymbols.mixins);
 	}
 
-	symbols.imports = symbols.imports.map((filepath) => {
-		return path.join(dir, filepath);
+	symbols.imports = symbols.imports.map((x) => {
+		x.filepath = path.join(path.dirname(symbols.document), x.filepath);
+		if (!x.css && !/\.less$/.test(x.filepath)) {
+			x.filepath += '.less';
+		}
+		return x;
 	});
 
 	return {

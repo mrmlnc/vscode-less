@@ -1,20 +1,18 @@
 'use strict';
 
-import { TextDocument } from 'vscode-languageserver';
+import { IVariable as IVar, IMixin as IMix, IImport as IImp } from 'less-symbols-parser';
 import { INode } from './nodes';
 
-export interface IVariable {
-	name: string;
-	value: string;
-	offset: number;
-	mixin: string;
+export interface IVariable extends IVar {
+	mixin?: string;
 }
 
-export interface IMixin {
-	name: string;
-	parameters: IVariable[];
-	parent: string;
-	offset: number;
+export interface IMixin extends IMix {
+  // :)
+}
+
+export interface IImport extends IImp {
+	reference?: boolean;
 }
 
 export interface ISymbols {
@@ -22,18 +20,10 @@ export interface ISymbols {
 	ctime?: Date;
 	variables: IVariable[];
 	mixins: IMixin[];
-	imports: string[];
+	imports: IImport[];
 }
 
 export interface IDocument {
 	ast: INode;
 	symbols: ISymbols;
-}
-
-export interface IServerDocument {
-	textDocument: TextDocument;
-	path: string;
-	offset: number;
-	word: string;
-	textBeforeWord: string;
 }

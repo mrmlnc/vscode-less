@@ -76,17 +76,19 @@
     "vscode": "^1.0.0",
     "typescript": "^2.0.3",
     "tslint": "^3.15.1",
-    "mocha": "^3.1.2"
+    "mocha": "^3.1.2",
+    "rimraf": "^2.5.4"
   },
   "dependencies": {
     "vscode-languageclient": "2.6.0",
     "vscode-languageserver": "2.6.0",
     "vscode-css-languageservice": "1.1.0",
     "readdir-enhanced": "1.4.4",
-    "micromatch": "2.3.11"
+    "micromatch": "2.3.11",
+    "less-symbols-parser": "2.0.4"
   },
   "scripts": {
-    "test": "tslint src/**/*.ts && tsc && mocha out/**/*.spec.js",
+    "test": "rimraf out && tslint src/**/*.ts && tsc && mocha out/**/*.spec.js",
     "build": "tslint src/**/*.ts && tsc"
   }
 }

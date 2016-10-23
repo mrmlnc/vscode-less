@@ -7,6 +7,7 @@ import { getLESSLanguageService } from 'vscode-css-languageservice';
 
 import { getCacheStorage } from '../../services/cache';
 import { doHover } from '../../providers/hover';
+import { ISettings } from '../../types/settings';
 
 const ls = getLESSLanguageService();
 
@@ -31,20 +32,26 @@ describe('Providers/Hover', () => {
 				{
 					name: '@test',
 					value: '1',
-					offset: 0,
-					mixin: null
+					offset: 0
 				}
 			],
 			mixins: [
 				{
 					name: '.test',
 					parameters: [],
-					parent: '',
 					offset: 0
 				}
 			],
 			imports: []
 		});
+
+		const settings = <ISettings>{
+			scannerExclude: [],
+			scannerDepth: 20,
+			showErrors: false,
+			suggestMixins: true,
+			suggestVariables: true
+		};
 
 		const document = TextDocument.create('test.less', 'less', 1, [
 			'@test: 1;',
@@ -52,13 +59,13 @@ describe('Providers/Hover', () => {
 		].join('\n'));
 
 		// Variable
-		const variableHover: IHover = <any>doHover(document, 2, cache).contents;
+		const variableHover: IHover = <any>doHover(document, 2, cache, settings).contents;
 
 		assert.equal(variableHover.language, 'less');
 		assert.equal(variableHover.value, '@test: 1');
 
 		// Mixin
-		const mixinHover: IHover = <any>doHover(document, 12, cache).contents;
+		const mixinHover: IHover = <any>doHover(document, 12, cache, settings).contents;
 
 		assert.equal(mixinHover.language, 'less');
 		assert.equal(mixinHover.value, '.test() {…}');
@@ -74,18 +81,24 @@ describe('Providers/Hover', () => {
 				{
 					name: '.a',
 					parameters: [],
-					parent: null,
 					offset: 0
 				},
 				{
 					name: '.b',
 					parameters: [],
-					parent: null,
 					offset: 0
 				}
 			],
 			imports: []
 		});
+
+		const settings = <ISettings>{
+			scannerExclude: [],
+			scannerDepth: 20,
+			showErrors: false,
+			suggestMixins: true,
+			suggestVariables: true
+		};
 
 		const document = TextDocument.create('test.less', 'less', 1, [
 			'.a() {',
@@ -95,7 +108,7 @@ describe('Providers/Hover', () => {
 		].join('\n'));
 
 		// Mixin
-		const mixinHover: IHover = <any>doHover(document, 21, cache).contents;
+		const mixinHover: IHover = <any>doHover(document, 21, cache, settings).contents;
 
 		assert.equal(mixinHover.language, 'less');
 		assert.equal(mixinHover.value, '.b() {…}');

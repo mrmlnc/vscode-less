@@ -5,6 +5,7 @@ import * as assert from 'assert';
 import { TextDocument } from 'vscode-languageserver';
 
 import { parseDocument } from '../../services/parser';
+import { ISettings } from '../../types/settings';
 
 function parseText(text: string[]): TextDocument {
 	return TextDocument.create('test.less', 'less', 1, text.join('\n'));
@@ -15,10 +16,12 @@ describe('Services/Parser', () => {
 	it('Find symbols without offset position', () => {
 		const doc = parseText([
 			'@name: "value";',
-			'.mixin(@a: 1, @b) {};'
+			'.mixin(@a: 1, @b) {}'
 		]);
 
-		const { symbols } = parseDocument(doc, './', null);
+		const { symbols } = parseDocument(doc, null, <ISettings>{
+			showErrors: false
+		});
 
 		// Variables
 		assert.equal(symbols.variables.length, 1);
@@ -45,10 +48,12 @@ describe('Services/Parser', () => {
 	it('Find symbols with offset position', () => {
 		const doc = parseText([
 			'@name: "value";',
-			'.mixin(@a: 1, @b) {};'
+			'.mixin(@a: 1, @b) {}'
 		]);
 
-		const { symbols } = parseDocument(doc, './', 36);
+		const { symbols } = parseDocument(doc, 36, <ISettings>{
+			showErrors: false
+		});
 
 		// Variables
 		assert.equal(symbols.variables.length, 3);
