@@ -16,7 +16,7 @@ import { parseDocument } from '../services/parser';
 import { getSymbolsCollection } from '../utils/symbols';
 import { getCurrentDocumentImportPaths, getDocumentPath } from '../utils/document';
 import { getLimitedString } from '../utils/string';
-import { getParentNodeByType, getNodeAtOffset } from '../utils/ast';
+import { getParentNodeByType } from '../utils/ast';
 
 /**
  * Returns a colored (marked) line for Variable.
