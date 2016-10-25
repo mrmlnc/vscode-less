@@ -16,7 +16,6 @@ import { parseDocument } from '../services/parser';
 import { getSymbolsCollection } from '../utils/symbols';
 import { getCurrentDocumentImportPaths, getDocumentPath } from '../utils/document';
 import { getLimitedString } from '../utils/string';
-import { getParentNodeByType } from '../utils/ast';
 
 /**
  * Returns a colored (marked) line for Variable.
@@ -29,7 +28,7 @@ function makeVariableAsMarkedString(symbol: IVariable, fsPath: string, suffix: s
 
 	return {
 		language: 'less',
-		value: `${symbol.name}: ${value}` + suffix
+		value: `${symbol.name}: ${value};` + suffix
 	};
 }
 
@@ -103,8 +102,14 @@ export function doHover(document: TextDocument, offset: number, cache: ICache, s
 			type: 'variables'
 		};
 	} else if (hoverNode.type === NodeType.Identifier) {
-		let node = getParentNodeByType(hoverNode, NodeType.MixinReference) || getParentNodeByType(hoverNode, NodeType.MixinDeclaration);
-		if (node) {
+		let i = 0;
+		let node = hoverNode;
+		while (node.type !== NodeType.MixinReference && node.type !== NodeType.MixinDeclaration && i !== 2) {
+			node = node.getParent();
+			i++;
+		}
+
+		if (node && (node.type === NodeType.MixinDeclaration || node.type === NodeType.MixinReference)) {
 			identifier = {
 				name: node.getName(),
 				type: 'mixins'

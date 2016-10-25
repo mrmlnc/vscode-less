@@ -3,115 +3,60 @@
 import * as assert from 'assert';
 
 import { TextDocument } from 'vscode-languageserver';
-import { getLESSLanguageService } from 'vscode-css-languageservice';
 
 import { getCacheStorage } from '../../services/cache';
 import { doHover } from '../../providers/hover';
 import { ISettings } from '../../types/settings';
 
-const ls = getLESSLanguageService();
+const cache = getCacheStorage();
 
-ls.configure({
-	lint: false,
-	validate: false
-});
+const settings = <ISettings>{
+	scannerExclude: [],
+	scannerDepth: 20,
+	showErrors: false,
+	suggestMixins: true,
+	suggestVariables: true
+};
 
 interface IHover {
 	language: string;
 	value: string;
 }
 
+function makeDocument(lines: string | string[]) {
+	return TextDocument.create('test.less', 'less', 1, Array.isArray(lines) ? lines.join('\n') : lines);
+}
+
 describe('Providers/Hover', () => {
 
-	it('doHover', () => {
-		const cache = getCacheStorage();
+	it('doHover - Variables', () => {
+		const doc = makeDocument([
+			'@one: 1;',
+			'@two: 2;'
+		]);
 
-		cache.set('test.less', {
-			document: 'test.less',
-			variables: [
-				{
-					name: '@test',
-					value: '1',
-					offset: 0
-				}
-			],
-			mixins: [
-				{
-					name: '.test',
-					parameters: [],
-					offset: 0
-				}
-			],
-			imports: []
-		});
-
-		const settings = <ISettings>{
-			scannerExclude: [],
-			scannerDepth: 20,
-			showErrors: false,
-			suggestMixins: true,
-			suggestVariables: true
-		};
-
-		const document = TextDocument.create('test.less', 'less', 1, [
-			'@test: 1;',
-			'.test() {}'
-		].join('\n'));
-
-		// Variable
-		const variableHover: IHover = <any>doHover(document, 2, cache, settings).contents;
-
-		assert.equal(variableHover.language, 'less');
-		assert.equal(variableHover.value, '@test: 1');
-
-		// Mixin
-		const mixinHover: IHover = <any>doHover(document, 12, cache, settings).contents;
-
-		assert.equal(mixinHover.language, 'less');
-		assert.equal(mixinHover.value, '.test() {…}');
+		// @o|
+		assert.equal((<IHover>doHover(doc, 2, cache, settings).contents).value, '@one: 1;');
+		// @t|
+		assert.equal((<IHover>doHover(doc, 12, cache, settings).contents).value, '@two: 2;');
 	});
 
-	it('issue-8', () => {
-		const cache = getCacheStorage();
+	it('doHover - Mixins', () => {
+		const doc = makeDocument([
+			'.one(@a) { content: "nope"; }',
+			'.one(1);'
+		]);
 
-		cache.set('test.less', {
-			document: 'test.less',
-			variables: [],
-			mixins: [
-				{
-					name: '.a',
-					parameters: [],
-					offset: 0
-				},
-				{
-					name: '.b',
-					parameters: [],
-					offset: 0
-				}
-			],
-			imports: []
-		});
-
-		const settings = <ISettings>{
-			scannerExclude: [],
-			scannerDepth: 20,
-			showErrors: false,
-			suggestMixins: true,
-			suggestVariables: true
-		};
-
-		const document = TextDocument.create('test.less', 'less', 1, [
-			'.a() {',
-			'  .b() {}',
-			'  .b();',
-			'}'
-		].join('\n'));
-
-		// Mixin
-		const mixinHover: IHover = <any>doHover(document, 21, cache, settings).contents;
-
-		assert.equal(mixinHover.language, 'less');
-		assert.equal(mixinHover.value, '.b() {…}');
+		// .on|
+		assert.equal((<IHover>doHover(doc, 3, cache, settings).contents).value, '.one(@a: null) {…}');
+		// // .one(@|
+		assert.equal((<IHover>doHover(doc, 6, cache, settings).contents).value, '@a: null;');
+		// // .one(@a) { con|
+		assert.equal(<any>doHover(doc, 14, cache, settings), null);
+		// // .one(@a) { content: "no|
+		assert.equal(<any>doHover(doc, 23, cache, settings), null);
+		// .o|
+		assert.equal((<IHover>doHover(doc, 32, cache, settings).contents).value, '.one(@a: null) {…}');
 	});
 
 });
