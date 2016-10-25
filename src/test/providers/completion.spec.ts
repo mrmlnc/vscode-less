@@ -9,64 +9,58 @@ import { ISettings } from '../../types/settings';
 import { getCacheStorage } from '../../services/cache';
 import { doCompletion } from '../../providers/completion';
 
+const settings = <ISettings>{
+	scannerExclude: [],
+	scannerDepth: 20,
+	showErrors: false,
+	suggestMixins: true,
+	suggestVariables: true
+};
+
+function makeDocument(lines: string | string[]) {
+	return TextDocument.create('test.less', 'less', 1, Array.isArray(lines) ? lines.join('\n') : lines);
+}
+
+const cache = getCacheStorage();
+
+cache.set('one.less', {
+	document: 'one.less',
+	variables: [
+		{ name: '@one', value: '1', offset: 0 },
+		{ name: '@two', value: null, offset: 0 }
+	],
+	mixins: [
+		{ name: '.test', parameters: [], offset: 0 }
+	],
+	imports: []
+});
+
+
 describe('Providers/Completion', () => {
 
-	it('doCompletion', () => {
-		const cache = getCacheStorage();
+	it('doCompletion - Variables suggestions', () => {
+		const doc = makeDocument('@');
+		assert.equal(doCompletion(doc, 1, settings, cache).items.length, 2);
+	});
 
-		cache.set('hide.less', {
-			document: 'test.less',
-			variables: [
-				{
-					name: '@test',
-					value: null,
-					offset: 0
-				},
-				{
-					name: '@skip',
-					value: '{ content: ""; }',
-					offset: 0
-				}
-			],
-			mixins: [
-				{
-					name: '.test',
-					parameters: [],
-					offset: 0
-				}
-			],
-			imports: []
-		});
+	it('doCompletion - Mixins suggestions', () => {
+		const doc = makeDocument('.');
+		assert.equal(doCompletion(doc, 1, settings, cache).items.length, 1);
+	});
 
-		const settings = <ISettings>{
-			scannerExclude: [],
-			scannerDepth: 20,
-			showErrors: false,
-			suggestMixins: true,
-			suggestVariables: true
-		};
+	it('doCompletion - Property value suggestions', () => {
+		const doc = makeDocument('.a { content:  }');
+		assert.equal(doCompletion(doc, 14, settings, cache).items.length, 2);
+	});
 
-		let document = null;
+	it('doCompletion - discard suggestions inside single-line comments', () => {
+		const doc = makeDocument('// @');
+		assert.equal(doCompletion(doc, 4, settings, cache).items.length, 0);
+	});
 
-		// Should show all suggestions
-		document = TextDocument.create('test.less', 'less', 1, '@');
-		assert.equal(doCompletion(document, 1, settings, cache).items.length, 2);
-
-		// Should discard Variables with Ruleset in values
-		document = TextDocument.create('test.less', 'less', 1, '@{');
-		assert.equal(doCompletion(document, 2, settings, cache).items.length, 1);
-
-		// Should discard Mixins with dynamic selectors
-		document = TextDocument.create('test.less', 'less', 1, '.');
-		assert.equal(doCompletion(document, 1, settings, cache).items.length, 1);
-
-		// Should discard suggestions inside comments
-		document = TextDocument.create('test.less', 'less', 1, '// @');
-		assert.equal(doCompletion(document, 4, settings, cache).items.length, 0);
-
-		// Should discard suggestions for parent Mixins in Mixin
-		document = TextDocument.create('test.less', 'less', 1, '.test() { . }');
-		assert.equal(doCompletion(document, 11, settings, cache).items.length, 0);
+	it('doCompletion - discard suggestions inside block comments', () => {
+		const doc = makeDocument('/* @ */');
+		assert.equal(doCompletion(doc, 4, settings, cache).items.length, 0);
 	});
 
 });

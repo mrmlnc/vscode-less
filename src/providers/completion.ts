@@ -68,13 +68,15 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 
 	// is .@{NAME}-test { ... }
 	const isInterpolationVariable = currentWord.indexOf('@{') !== -1;
+	// Is property value
+	const isPropertyValue = /.*:\s*/.test(textBeforeWord);
 
 	// Bad idea: Drop suggestions inside `//` and `/* */` comments
 	if (/^(\/(\/|\*)|\*)/.test(textBeforeWord.trim())) {
 		return completions;
 	}
 
-	if (settings.suggestVariables && (currentWord.startsWith('@') || isInterpolationVariable)) {
+	if (settings.suggestVariables && (currentWord.startsWith('@') || isInterpolationVariable || isPropertyValue)) {
 		symbolsList.forEach((symbols) => {
 			const fsPath = getDocumentPath(documentPath, symbols.document);
 			const isImplicitlyImport = symbols.document !== documentPath && documentImports.indexOf(symbols.document) === -1;
