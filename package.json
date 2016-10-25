@@ -2,7 +2,7 @@
   "name": "vscode-less",
   "displayName": "Less IntelliSense",
   "description": "Advanced autocompletion and refactoring support for Less",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "preview": true,
   "publisher": "mrmlnc",
   "license": "MIT",
