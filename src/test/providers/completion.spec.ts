@@ -35,7 +35,6 @@ cache.set('one.less', {
 	imports: []
 });
 
-
 describe('Providers/Completion', () => {
 
 	it('doCompletion - Variables suggestions', () => {
@@ -53,12 +52,12 @@ describe('Providers/Completion', () => {
 		assert.equal(doCompletion(doc, 14, settings, cache).items.length, 2);
 	});
 
-	it('doCompletion - discard suggestions inside single-line comments', () => {
+	it('doCompletion - Discard suggestions inside single-line comments', () => {
 		const doc = makeDocument('// @');
 		assert.equal(doCompletion(doc, 4, settings, cache).items.length, 0);
 	});
 
-	it('doCompletion - discard suggestions inside block comments', () => {
+	it('doCompletion - Discard suggestions inside block comments', () => {
 		const doc = makeDocument('/* @ */');
 		assert.equal(doCompletion(doc, 4, settings, cache).items.length, 0);
 	});
