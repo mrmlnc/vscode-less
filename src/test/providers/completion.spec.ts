@@ -27,11 +27,11 @@ const cache = getCacheStorage();
 cache.set('one.less', {
 	document: 'one.less',
 	variables: [
-		{ name: '@one', value: '1', offset: 0 },
-		{ name: '@two', value: null, offset: 0 }
+		{ name: '@one', value: '1', offset: 0, position: null },
+		{ name: '@two', value: null, offset: 0, position: null }
 	],
 	mixins: [
-		{ name: '.test', parameters: [], offset: 0 }
+		{ name: '.test', parameters: [], offset: 0, position: null }
 	],
 	imports: []
 });
