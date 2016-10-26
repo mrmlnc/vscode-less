@@ -1,0 +1,14 @@
+@import "mixins/one";
+@import "mixins/two.less";
+@import "variables/one";
+@import "variables/two.less";
+@import "./includes/b.css";
+@import "**/*.less";
+
+@local: local;
+
+.two() {
+	// local mixin
+}
+
+.two();

@@ -24,23 +24,23 @@ describe('Services/Scanner', () => {
 	it('Scan without Imported files', () => {
 		const options = <ISettings>{
 			scannerDepth: 10,
-			scannerExclude: ['**/includes', '**/mixins']
+			scannerExclude: ['**/variables', '**/mixins']
 		};
 
 		return doScanner('./fixtures', cache, options).then((symbols) => {
-			assert.equal(symbols.length, 2);
+			assert.equal(symbols.length, 1);
 		});
 	});
 
 	it('Scan with Imported files', () => {
 		const options = <ISettings>{
 			scannerDepth: 10,
-			scannerExclude: ['**/includes', '**/mixins'],
+			scannerExclude: ['**/variables', '**/mixins'],
 			scanImportedFiles: true
 		};
 
 		return doScanner('./fixtures', cache, options).then((symbols) => {
-			assert.equal(symbols.length, 7);
+			assert.equal(symbols.length, 6);
 		});
 	});
 
