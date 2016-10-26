@@ -37,13 +37,6 @@ console.error = connection.console.error.bind(connection.console);
 // supports full document sync only
 const documents: TextDocuments = new TextDocuments();
 
-// Drop cache for closed files
-documents.onDidClose((event) => {
-	const fsPath = Files.uriToFilePath(event.document.uri);
-
-	cache.drop(fsPath);
-});
-
 // Make the text document manager listen on the connection
 // for open, change and close text document events
 documents.listen(connection);
