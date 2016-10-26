@@ -13,6 +13,7 @@ const settings = <ISettings>{
 	scannerExclude: [],
 	scannerDepth: 20,
 	showErrors: false,
+	showImplicitlyLabel: true,
 	suggestMixins: true,
 	suggestVariables: true
 };
@@ -60,6 +61,17 @@ describe('Providers/Completion', () => {
 	it('doCompletion - Discard suggestions inside block comments', () => {
 		const doc = makeDocument('/* @ */');
 		assert.equal(doCompletion(doc, 4, settings, cache).items.length, 0);
+	});
+
+	it('doCompletion - Show implicitly label', () => {
+		const doc = makeDocument('@');
+		assert.equal(doCompletion(doc, 1, settings, cache).items[0].detail, '(implicitly) one.less');
+	});
+
+	it('doCompletion - Hide implicitly label', () => {
+		const doc = makeDocument('@');
+		settings.showImplicitlyLabel = false;
+		assert.equal(doCompletion(doc, 1, settings, cache).items[0].detail, 'one.less');
 	});
 
 });

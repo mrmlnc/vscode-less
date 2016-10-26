@@ -80,6 +80,13 @@ The maximum number of imported files to scan. Prevent an infinite recursion and 
 
 Allows to display errors.
 
+**less.showImplicitlyLabel**
+
+  * Type: `boolean`
+  * Default: `true`
+
+Display a label if the file imported implicitly.
+
 **less.suggestVariables**
 
   * Type: `boolean`
