@@ -48,7 +48,7 @@ function getSymbols(symbolList: ISymbols[], identifier: any, currentPath: string
 /**
  * Do Go Definition :)
  */
-export function doGoDefinition(document: TextDocument, offset: number, cache: ICache, settings: ISettings): Location[] {
+export function goDefinition(document: TextDocument, offset: number, cache: ICache, settings: ISettings): Location[] {
 	const documentPath = Files.uriToFilePath(document.uri) || document.uri;
 	if (!documentPath) {
 		return [];

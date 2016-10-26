@@ -7,7 +7,7 @@ import { TextDocument, Files } from 'vscode-languageserver';
 import { ISettings } from '../../types/settings';
 
 import { getCacheStorage } from '../../services/cache';
-import { doGoDefinition } from '../../providers/goDefinition';
+import { goDefinition } from '../../providers/goDefinition';
 
 const settings = <ISettings>{
 	scannerExclude: [],
@@ -38,7 +38,7 @@ describe('Providers/GoDefinition', () => {
 
 	it('doGoDefinition - Variables', () => {
 		const doc = makeDocument('.a { content: @a; }');
-		const result = doGoDefinition(doc, 15, cache, settings);
+		const result = goDefinition(doc, 15, cache, settings);
 
 		assert.equal(result.length, 1);
 		assert.ok(Files.uriToFilePath(result[0].uri), 'one.less');
@@ -50,14 +50,14 @@ describe('Providers/GoDefinition', () => {
 
 	it('doGoDefinition - Variable definition', () => {
 		const doc = makeDocument('@a: 1;');
-		const result = doGoDefinition(doc, 2, cache, settings);
+		const result = goDefinition(doc, 2, cache, settings);
 
 		assert.equal(result.length, 0);
 	});
 
 	it('doGoDefinition - Mixins', () => {
 		const doc = makeDocument('.a { .mixin(); }');
-		const result = doGoDefinition(doc, 8, cache, settings);
+		const result = goDefinition(doc, 8, cache, settings);
 
 		assert.equal(result.length, 1);
 		assert.ok(Files.uriToFilePath(result[0].uri), 'one.less');
@@ -69,14 +69,14 @@ describe('Providers/GoDefinition', () => {
 
 	it('doGoDefinition - Mixin definition', () => {
 		const doc = makeDocument('.a(@a) {}');
-		const result = doGoDefinition(doc, 2, cache, settings);
+		const result = goDefinition(doc, 2, cache, settings);
 
 		assert.equal(result.length, 0);
 	});
 
 	it('doGoDefinition - Mixin Arguments', () => {
 		const doc = makeDocument('.a(@a) {}');
-		const result = doGoDefinition(doc, 4, cache, settings);
+		const result = goDefinition(doc, 4, cache, settings);
 
 		assert.equal(result.length, 0);
 	});
