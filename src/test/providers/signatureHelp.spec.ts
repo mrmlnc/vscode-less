@@ -57,7 +57,7 @@ describe('Providers/SignatureHelp', () => {
 
 	it('doSignatureHelp - Closed', () => {
 		const doc = makeDocument('.two(1);');
-		assert.equal(doSignatureHelp(doc, 8, cache, settings), null);
+		assert.equal(doSignatureHelp(doc, 8, cache, settings).signatures.length, 0);
 	});
 
 	it('doSignatureHelp - Two parameters', () => {

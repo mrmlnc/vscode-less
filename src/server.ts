@@ -7,8 +7,7 @@ import {
 	IPCMessageWriter,
 	TextDocuments,
 	InitializeParams,
-	InitializeResult,
-	Files
+	InitializeResult
 } from 'vscode-languageserver';
 
 import { ISettings } from './types/settings';
