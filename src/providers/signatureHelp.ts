@@ -29,7 +29,7 @@ function parseArgumentsAtLine(text: string): IMixinEntry {
 		text = text.slice(text.indexOf('{') + 1, text.length).trim();
 	}
 
-	const name = text.match(/([^\(]+)/)[1] || null;
+	const name = text.match(/([^\(]+)/);
 	const paramsString = text.slice(text.indexOf('(') + 1, text.length);
 
 	let parameters = [];
@@ -57,7 +57,7 @@ function parseArgumentsAtLine(text: string): IMixinEntry {
 	}
 
 	return {
-		name,
+		name: name ? name[1] : null,
 		parameters
 	};
 }
