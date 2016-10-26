@@ -1,6 +1,6 @@
 # vscode-less
 
-> Less intellisense for Variables and Mixins in all Less files.
+> Less IntelliSense (Variables and Mixins) for all files in the workspace.
 
 > **Disclaimer**
 >
@@ -23,87 +23,69 @@ Just install the plugin and use it.
 
 ## Supported features
 
-**Intellisense for Variables**
-
-![Less Intellisense VS Code](https://cloud.githubusercontent.com/assets/7034281/19413624/2d794d5a-933b-11e6-837d-66b86e873004.png)
-
-**Hover for Variables**
-
-![Less Intellisense VS Code](https://cloud.githubusercontent.com/assets/7034281/19413666/40bc63c4-933c-11e6-92c7-3f5ed0cf0d3d.png)
-
-**Intellisense for Mixins**
-
-![Less Intellisense VS Code](https://cloud.githubusercontent.com/assets/7034281/19413672/795d40fe-933c-11e6-919d-de14532ee49a.png)
-
-**Hover for Mixins**
-
-![Less Intellisense VS Code](https://cloud.githubusercontent.com/assets/7034281/19413681/a3789ed8-933c-11e6-81ea-0fd853bb5a00.png)
-
-**Signature Help**
-
-![Less Intellisense VS Code](https://cloud.githubusercontent.com/assets/7034281/19627576/753228e8-9952-11e6-9d10-6089b878a118.png)
+  * Code Completion Proposals (variables, mixins) — [description](http://code.visualstudio.com/docs/extensions/language-support#_show-code-completion-proposals)
+  * Hover (variables, mixins) — [description](http://code.visualstudio.com/docs/extensions/language-support#_show-hovers)
+  * Signature Help (mixins) — [description](http://code.visualstudio.com/docs/extensions/language-support#_help-with-function-and-method-signatures)
+  * Visual Studio reference comments: `// <reference path="./variable.less" />`
+  * Import files by `@import "filepath";` from anywhere. Even outside of the open workspace.
 
 ## Supported settings
 
-**less.scannerDepth**
+#### less.scannerDepth
 
   * Type: `number`
   * Default: `30`
 
 The maximum number of nested directories to scan.
 
-**less.scannerExclude**
+#### less.scannerExclude
 
   * Type: `string[]`
   * Default: `[".git", "**/node_modules", "**/bower_components"]`
 
 List of Glob-patterns for directories that are excluded when scanning.
 
-**less.scanImportedFiles**
+#### less.scanImportedFiles
 
   * Type: `boolean`
   * Default: `true`
 
 Allows scan imported files.
 
-**less.scanImportedFilesDepth**
+#### less.scanImportedFilesDepth
 
   * Type: `number`
   * Default: `50`
 
 The maximum number of imported files to scan. Prevent an infinite recursion and very deep `@import`.
 
-**less.showErrors**
+#### less.showErrors
 
   * Type: `boolean`
   * Default: `false`
 
 Allows to display errors.
 
-**less.showImplicitlyLabel**
+#### less.showImplicitlyLabel
 
   * Type: `boolean`
   * Default: `true`
 
 Display a label if the file imported implicitly.
 
-**less.suggestVariables**
+#### less.suggestVariables
 
   * Type: `boolean`
   * Default: `true`
 
 Allows prompt Variables.
 
-**less.suggestMixins**
+#### less.suggestMixins
 
   * Type: `boolean`
   * Default: `true`
 
 Allows prompt Mixins.
-
-## What's next?
-
-See Issues with [`feature-request`](https://github.com/mrmlnc/vscode-less/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-request) and [`next-iteration`](https://github.com/mrmlnc/vscode-less/issues?q=is%3Aissue+is%3Aopen+label%3Anext-iteration) labels.
 
 ## Questions
 
