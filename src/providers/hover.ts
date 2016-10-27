@@ -95,19 +95,23 @@ export function doHover(document: TextDocument, offset: number, cache: ICache, s
 
 	let identifier: { type: string; name: string; } = null;
 	if (hoverNode.type === NodeType.VariableName) {
-		identifier = {
-			name: hoverNode.getName(),
-			type: 'variables'
-		};
+		const parent = hoverNode.getParent();
+
+		if (parent.type !== NodeType.VariableDeclaration && parent.type !== NodeType.FunctionParameter) {
+			identifier = {
+				name: hoverNode.getName(),
+				type: 'variables'
+			};
+		}
 	} else if (hoverNode.type === NodeType.Identifier) {
 		let i = 0;
 		let node = hoverNode;
-		while (node.type !== NodeType.MixinReference && node.type !== NodeType.MixinDeclaration && i !== 2) {
+		while (node.type !== NodeType.MixinReference && i !== 2) {
 			node = node.getParent();
 			i++;
 		}
 
-		if (node && (node.type === NodeType.MixinDeclaration || node.type === NodeType.MixinReference)) {
+		if (node.type === NodeType.MixinReference) {
 			identifier = {
 				name: node.getName(),
 				type: 'mixins'

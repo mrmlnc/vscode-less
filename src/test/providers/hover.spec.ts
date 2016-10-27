@@ -32,16 +32,13 @@ describe('Providers/Hover', () => {
 	it('doHover - Variables', () => {
 		const doc = makeDocument([
 			'@one: 1;',
-			'@two: 2;',
 			'.a { content: @one; }'
 		]);
 
 		// @o|
-		assert.equal((<IHover>doHover(doc, 2, cache, settings).contents).value, '@one: 1;');
-		// @t|
-		assert.equal((<IHover>doHover(doc, 12, cache, settings).contents).value, '@two: 2;');
+		assert.equal(<any>doHover(doc, 2, cache, settings), null);
 		// .a { content: @o|
-		assert.equal((<IHover>doHover(doc, 34, cache, settings).contents).value, '@one: 1;');
+		assert.equal((<IHover>doHover(doc, 25, cache, settings).contents).value, '@one: 1;');
 	});
 
 	it('doHover - Mixins', () => {
@@ -51,9 +48,9 @@ describe('Providers/Hover', () => {
 		]);
 
 		// .on|
-		assert.equal((<IHover>doHover(doc, 3, cache, settings).contents).value, '.one(@a: null) {…}');
+		assert.equal(<any>doHover(doc, 3, cache, settings), null);
 		// // .one(@|
-		assert.equal((<IHover>doHover(doc, 6, cache, settings).contents).value, '@a: null;');
+		assert.equal(<any>doHover(doc, 6, cache, settings), null);
 		// // .one(@a) { con|
 		assert.equal(<any>doHover(doc, 14, cache, settings), null);
 		// // .one(@a) { content: "no|
