@@ -60,19 +60,19 @@ Allows scan imported files.
 
 The maximum number of imported files to scan. Prevent an infinite recursion and very deep `@import`.
 
+#### less.implicitlyLabel
+
+  * Type: `string|null`
+  * Default: `(implicitly)`
+
+The text of a label that the file imported implicitly. If `null` then label not displayed.
+
 #### less.showErrors
 
   * Type: `boolean`
   * Default: `false`
 
 Allows to display errors.
-
-#### less.showImplicitlyLabel
-
-  * Type: `boolean`
-  * Default: `true`
-
-Display a label if the file imported implicitly.
 
 #### less.suggestVariables
 
