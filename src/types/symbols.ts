@@ -26,6 +26,6 @@ export interface ISymbols {
 }
 
 export interface IDocument {
-	ast: INode;
+	node: INode;
 	symbols: ISymbols;
 }
