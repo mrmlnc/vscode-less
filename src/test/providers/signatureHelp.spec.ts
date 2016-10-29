@@ -134,6 +134,11 @@ describe('Providers/SignatureHelp', () => {
 		assert.equal(doSignatureHelp(doc, 12, cache, settings).signatures.length, 2);
 	});
 
+	it('doSignatureHelp - Single-line Mixin reference', () => {
+		const doc = makeDocument('h1 { .two(1, 2); .two(1,) }');
+		assert.equal(doSignatureHelp(doc, 24, cache, settings).signatures.length, 2);
+	});
+
 	it('doSignatureHelp - Mixin with named argument', () => {
 		const doc = makeDocument('.two(@a: 1,');
 		assert.equal(doSignatureHelp(doc, 11, cache, settings).signatures.length, 2);
