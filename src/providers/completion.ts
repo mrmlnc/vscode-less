@@ -47,6 +47,30 @@ function mixinSuggestionsFilter(mixin: IMixin, node: INode): boolean {
 }
 
 /**
+ * Check context for Variables suggestions.
+ */
+function checkVariableContext(textBeforeWord: string, currentWord: string, isInterpolation: boolean): boolean {
+	const isPropertyValue = /.*:\s*/.test(textBeforeWord);
+	const isEmptyValue = /.*:\s*$/.test(textBeforeWord);
+	const isQuotes = /['"]/.test(textBeforeWord.replace(/['"](?:[^'"\\]|\\.)*['"]/g, ''));
+
+	if (isPropertyValue && !isEmptyValue && !isQuotes) {
+		return currentWord.includes('@');
+	} else if (isQuotes) {
+		return isInterpolation;
+	}
+
+	return currentWord.startsWith('@') || isInterpolation || isEmptyValue;
+}
+
+/**
+ * Check context for Mixins suggestions.
+ */
+function checkMixinsContext(textBeforeWord: string, currentWord: string): boolean {
+	return !/.*:\s*/.test(textBeforeWord) && (currentWord.startsWith('.') || currentWord.startsWith('#'));
+}
+
+/**
  * Do Completion :)
  */
 export function doCompletion(document: TextDocument, offset: number, settings: ISettings, cache: ICache): CompletionList {
@@ -68,16 +92,14 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 	const textBeforeWord = getTextBeforePosition(document.getText(), offset);
 
 	// is .@{NAME}-test { ... }
-	const isInterpolationVariable = currentWord.includes('@{');
-	// Is property value
-	const isPropertyValue = /.*:\s*/.test(textBeforeWord);
+	const isInterpolation = currentWord.includes('@{');
 
 	// Bad idea: Drop suggestions inside `//` and `/* */` comments
 	if (/^(\/(\/|\*)|\*)/.test(textBeforeWord.trim())) {
 		return completions;
 	}
 
-	if (settings.suggestVariables && (currentWord.startsWith('@') || isInterpolationVariable || isPropertyValue)) {
+	if (settings.suggestVariables && checkVariableContext(textBeforeWord, currentWord, isInterpolation)) {
 		symbolsList.forEach((symbols) => {
 			const fsPath = getDocumentPath(documentPath, symbols.document);
 			const isImplicitlyImport = symbols.document !== documentPath && documentImports.indexOf(symbols.document) === -1;
@@ -85,7 +107,7 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 			symbols.variables.forEach((variable) => {
 				// Drop Variable if its value is RuleSet in interpolation
 				// .test-@{|cursor}
-				if (isInterpolationVariable && variable.value && variable.value.includes('{')) {
+				if (isInterpolation && variable.value && variable.value.includes('{')) {
 					return;
 				}
 
@@ -103,14 +125,14 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 
 				completions.items.push({
 					// If variable interpolation, then remove the @ character from label
-					label: isInterpolationVariable ? variable.name.substr(1) : variable.name,
+					label: isInterpolation ? variable.name.substr(1) : variable.name,
 					kind: CompletionItemKind.Variable,
 					detail: detailText,
 					documentation: getLimitedString(variable.value)
 				});
 			});
 		});
-	} else if (settings.suggestMixins && (currentWord.startsWith('.') || currentWord.startsWith('#'))) {
+	} else if (settings.suggestMixins && checkMixinsContext(textBeforeWord, currentWord)) {
 		symbolsList.forEach((symbols) => {
 			const fsPath = getDocumentPath(documentPath, symbols.document);
 			const isImplicitlyImport = symbols.document !== documentPath && documentImports.indexOf(symbols.document) === -1;

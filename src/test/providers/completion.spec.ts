@@ -36,45 +36,71 @@ cache.set('one.less', {
 	imports: []
 });
 
-describe('Providers/Completion', () => {
+describe('Providers/Completion - Basic', () => {
 
-	it('doCompletion - Variables suggestions', () => {
+	it('Variables', () => {
 		const doc = makeDocument('@');
 		assert.equal(doCompletion(doc, 1, settings, cache).items.length, 2);
 	});
 
-	it('doCompletion - Mixins suggestions', () => {
+	it('Mixins', () => {
 		const doc = makeDocument('.');
 		assert.equal(doCompletion(doc, 1, settings, cache).items.length, 1);
 	});
 
-	it('doCompletion - Property value suggestions', () => {
+});
+
+describe('Providers/Completion - Context', () => {
+
+	it('Empty property value', () => {
 		const doc = makeDocument('.a { content:  }');
 		assert.equal(doCompletion(doc, 14, settings, cache).items.length, 2);
 	});
 
-	it('doCompletion - Discard suggestions inside single-line comments', () => {
+	it('Non-empty property value without suggestions', () => {
+		const doc = makeDocument('.a { background: url(../images/one.png); }');
+		assert.equal(doCompletion(doc, 34, settings, cache).items.length, 0);
+	});
+
+	it('Non-empty property value with Variables', () => {
+		const doc = makeDocument('.a { background: url(../images/@{one}/one.png); }');
+		assert.equal(doCompletion(doc, 36, settings, cache).items.length, 2, 'True');
+		assert.equal(doCompletion(doc, 41, settings, cache).items.length, 0, 'False');
+	});
+
+	it('Discard suggestions inside quotes', () => {
+		const doc = makeDocument('.a { background: url("../images/@{one}/@one.png"); .test("test", @one); }');
+		assert.equal(doCompletion(doc, 43, settings, cache).items.length, 0, 'Hide');
+		assert.equal(doCompletion(doc, 37, settings, cache).items.length, 2, 'True');
+		assert.equal(doCompletion(doc, 69, settings, cache).items.length, 2, 'Mixin');
+	});
+
+	it('Discard suggestions inside single-line comments', () => {
 		const doc = makeDocument('// @');
 		assert.equal(doCompletion(doc, 4, settings, cache).items.length, 0);
 	});
 
-	it('doCompletion - Discard suggestions inside block comments', () => {
+	it('Discard suggestions inside block comments', () => {
 		const doc = makeDocument('/* @ */');
 		assert.equal(doCompletion(doc, 4, settings, cache).items.length, 0);
 	});
 
-	it('doCompletion - Show default implicitly label', () => {
+});
+
+describe('Providers/Completion - Implicitly', () => {
+
+	it('Show default implicitly label', () => {
 		const doc = makeDocument('@');
 		assert.equal(doCompletion(doc, 1, settings, cache).items[0].detail, '(implicitly) one.less');
 	});
 
-	it('doCompletion - Show custom implicitly label', () => {
+	it('Show custom implicitly label', () => {
 		const doc = makeDocument('@');
 		settings.implicitlyLabel = '👻';
 		assert.equal(doCompletion(doc, 1, settings, cache).items[0].detail, '👻 one.less');
 	});
 
-	it('doCompletion - Hide implicitly label', () => {
+	it('Hide implicitly label', () => {
 		const doc = makeDocument('@');
 		settings.implicitlyLabel = null;
 		assert.equal(doCompletion(doc, 1, settings, cache).items[0].detail, 'one.less');
