@@ -46,10 +46,11 @@ export function parseDocument(document: TextDocument, offset: number = null, set
 	const references = document.getText().match(/\/\/\s*<reference\s*path=["'](.*)['"]\s*\/?>/g);
 	if (references) {
 		references.forEach((x) => {
+			const filepath = /\/\/\s*<reference\s*path=["'](.*)['"]\s*\/?>/.exec(x)[1];
 			symbols.imports.push({
-				css: false,
-				dynamic: false,
-				filepath: /\/\/\s*<reference\s*path=["'](.*)['"]\s*\/?>/.exec(x)[1],
+				css: /css$/.test(filepath),
+				dynamic: /@{}\*/.test(filepath),
+				filepath: filepath,
 				modes: [],
 				reference: true
 			});
