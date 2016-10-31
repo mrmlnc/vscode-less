@@ -29,10 +29,6 @@ function makeMixinDocumentation(symbol: IMixin): string {
  * Skip suggestions for parent Mixin inside Mixins.
  */
 function mixinSuggestionsFilter(mixin: IMixin, node: INode): boolean {
-	if (!node) {
-		return false;
-	}
-
 	while (node.type !== NodeType.Stylesheet) {
 		if (node.type === NodeType.MixinDeclaration) {
 			const identifier = node.getIdentifier();
@@ -68,7 +64,7 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 	const textBeforeWord = getTextBeforePosition(document.getText(), offset);
 
 	// is .@{NAME}-test { ... }
-	const isInterpolationVariable = currentWord.indexOf('@{') !== -1;
+	const isInterpolationVariable = currentWord.includes('@{');
 	// Is property value
 	const isPropertyValue = /.*:\s*/.test(textBeforeWord);
 
@@ -85,7 +81,7 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 			symbols.variables.forEach((variable) => {
 				// Drop Variable if its value is RuleSet in interpolation
 				// .test-@{|cursor}
-				if (isInterpolationVariable && variable.value && variable.value.indexOf('{') !== -1) {
+				if (isInterpolationVariable && variable.value && variable.value.includes('{')) {
 					return;
 				}
 
