@@ -1,14 +1,14 @@
 {
 	"compilerOptions": {
-		"target": "es2015",
+		"target": "es6",
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"rootDir": "src",
 		"outDir": "out",
-		"noLib": false,
-		"noImplicitAny": false,
-		"experimentalDecorators": true,
+		"forceConsistentCasingInFileNames": true,
+		"pretty": true,
 		"removeComments": true,
+		"sourceMap": false,
 		"declaration": false
 	}
 }
