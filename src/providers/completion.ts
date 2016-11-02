@@ -60,14 +60,14 @@ function checkVariableContext(textBeforeWord: string, currentWord: string, isInt
 		return isInterpolation;
 	}
 
-	return currentWord.startsWith('@') || isInterpolation || isEmptyValue;
+	return currentWord[0] === '@' || isInterpolation || isEmptyValue;
 }
 
 /**
  * Check context for Mixins suggestions.
  */
 function checkMixinsContext(textBeforeWord: string, currentWord: string): boolean {
-	return !/.*:\s*/.test(textBeforeWord) && (currentWord.startsWith('.') || currentWord.startsWith('#'));
+	return !/.*:\s*/.test(textBeforeWord) && (currentWord[0] === '.' || currentWord[0] === '#');
 }
 
 /**
@@ -107,7 +107,7 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 			symbols.variables.forEach((variable) => {
 				// Drop Variable if its value is RuleSet in interpolation
 				// .test-@{|cursor}
-				if (isInterpolation && variable.value && variable.value.includes('{')) {
+				if (isInterpolation && variable.value && variable.value[0] === '{') {
 					return;
 				}
 
