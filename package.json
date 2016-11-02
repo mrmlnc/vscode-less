@@ -78,8 +78,8 @@
     }
   },
   "devDependencies": {
-    "vscode": "^1.0.0",
-    "typescript": "^2.0.3",
+    "vscode": "^1.0.3",
+    "typescript": "^2.0.6",
     "tslint": "^3.15.1",
     "mocha": "^3.1.2",
     "rimraf": "^2.5.4"
@@ -89,7 +89,7 @@
     "vscode-languageserver": "2.6.0",
     "vscode-css-languageservice": "1.1.0",
     "vscode-uri": "1.0.0",
-    "readdir-enhanced": "1.4.4",
+    "readdir-enhanced": "1.4.5",
     "micromatch": "2.3.11",
     "less-symbols-parser": "2.1.0"
   },
