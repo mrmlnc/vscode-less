@@ -85,13 +85,13 @@
     "rimraf": "^2.5.4"
   },
   "dependencies": {
-    "vscode-languageclient": "2.6.0",
-    "vscode-languageserver": "2.6.0",
+    "vscode-languageclient": "2.6.3",
+    "vscode-languageserver": "2.6.2",
     "vscode-css-languageservice": "1.1.0",
     "vscode-uri": "1.0.0",
     "readdir-enhanced": "1.4.5",
     "micromatch": "2.3.11",
-    "less-symbols-parser": "2.1.0"
+    "less-symbols-parser": "2.1.1"
   },
   "scripts": {
     "clean": "rimraf out",
