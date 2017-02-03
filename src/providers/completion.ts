@@ -91,7 +91,7 @@ export function doCompletion(document: TextDocument, offset: number, settings: I
 	const currentWord = getCurrentWord(document.getText(), offset);
 	const textBeforeWord = getTextBeforePosition(document.getText(), offset);
 
-	// is .@{NAME}-test { ... }
+	// Is .@{NAME}-test { ... }
 	const isInterpolation = currentWord.includes('@{');
 
 	// Bad idea: Drop suggestions inside `//` and `/* */` comments

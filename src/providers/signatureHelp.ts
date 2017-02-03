@@ -8,7 +8,6 @@ import {
 } from 'vscode-languageserver';
 import { tokenizer } from 'less-symbols-parser';
 
-// import { NodeType } from '../types/nodes';
 import { IVariable } from '../types/symbols';
 import { ISettings } from '../types/settings';
 import { ICache } from '../services/cache';

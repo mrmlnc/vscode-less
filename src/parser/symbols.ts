@@ -27,7 +27,7 @@ export function findSymbols(text: string): ISymbols {
 export function findSymbolsAtOffset(parsedDocument: INode, offset: number): ISymbols {
 	let variables: IVariable[] = [];
 	let mixins: IMixin[] = [];
-	let imports: IImport[] = [];
+	const imports: IImport[] = [];
 
 	let node = getNodeAtOffset(parsedDocument, offset);
 	if (!node) {
