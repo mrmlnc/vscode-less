@@ -6,9 +6,9 @@
 		"rootDir": "src",
 		"outDir": "out",
 		"forceConsistentCasingInFileNames": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
 		"pretty": true,
-		"removeComments": true,
-		"sourceMap": false,
-		"declaration": false
+		"declaration": true
 	}
 }
