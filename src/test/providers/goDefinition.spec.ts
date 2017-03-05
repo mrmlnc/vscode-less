@@ -38,47 +38,50 @@ describe('Providers/GoDefinition', () => {
 
 	it('doGoDefinition - Variables', () => {
 		const doc = makeDocument('.a { content: @a; }');
-		const result = goDefinition(doc, 15, cache, settings);
 
-		assert.equal(result.length, 1);
-		assert.ok(Files.uriToFilePath(result[0].uri), 'one.less');
-		assert.deepEqual(result[0].range, {
-			start: { line: 1, character: 1 },
-			end: { line: 1, character: 3 }
+		return goDefinition(doc, 15, cache, settings).then((result) => {
+			assert.ok(Files.uriToFilePath(result.uri), 'one.less');
+			assert.deepEqual(result.range, {
+				start: { line: 1, character: 1 },
+				end: { line: 1, character: 3 }
+			});
 		});
 	});
 
 	it('doGoDefinition - Variable definition', () => {
 		const doc = makeDocument('@a: 1;');
-		const result = goDefinition(doc, 2, cache, settings);
 
-		assert.equal(result.length, 0);
+		return goDefinition(doc, 2, cache, settings).then((result) => {
+			assert.equal(result, null);
+		});
 	});
 
 	it('doGoDefinition - Mixins', () => {
 		const doc = makeDocument('.a { .mixin(); }');
-		const result = goDefinition(doc, 8, cache, settings);
 
-		assert.equal(result.length, 1);
-		assert.ok(Files.uriToFilePath(result[0].uri), 'one.less');
-		assert.deepEqual(result[0].range, {
-			start: { line: 1, character: 1 },
-			end: { line: 1, character: 7 }
+		return goDefinition(doc, 8, cache, settings).then((result) => {
+			assert.ok(Files.uriToFilePath(result.uri), 'one.less');
+			assert.deepEqual(result.range, {
+				start: { line: 1, character: 1 },
+				end: { line: 1, character: 7 }
+			});
 		});
 	});
 
 	it('doGoDefinition - Mixin definition', () => {
 		const doc = makeDocument('.a(@a) {}');
-		const result = goDefinition(doc, 2, cache, settings);
 
-		assert.equal(result.length, 0);
+		return goDefinition(doc, 2, cache, settings).then((result) => {
+			assert.equal(result, null);
+		});
 	});
 
 	it('doGoDefinition - Mixin Arguments', () => {
 		const doc = makeDocument('.a(@a) {}');
-		const result = goDefinition(doc, 4, cache, settings);
 
-		assert.equal(result.length, 0);
+		return goDefinition(doc, 4, cache, settings).then((result) => {
+			assert.equal(result, null);
+		});
 	});
 
 });

@@ -60,6 +60,7 @@ connection.onInitialize((params: InitializeParams): Promise<InitializeResult> =>
 				},
 				hoverProvider: true,
 				definitionProvider: true,
+				referencesProvider: false,
 				workspaceSymbolProvider: true
 			}
 		};
