@@ -1,8 +1,3 @@
-// Type definitions for readdirp
-// Project: https://github.com/thlorenz/readdirp
-// Definitions by: Erik Vullings
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
-
 declare module "readdir-enhanced" {
 
 	import fs = require('fs');
