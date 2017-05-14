@@ -10,12 +10,16 @@ import {
 	TransportKind
 } from 'vscode-languageclient';
 
+import { ISettings } from './types/settings';
+
 export function activate(context: vscode.ExtensionContext) {
 	const serverModule = path.join(__dirname, 'server.js');
 
 	const debugOptions = {
 		execArgv: ['--nolazy', '--debug=6004']
 	};
+
+	const settings = vscode.workspace.getConfiguration().get<ISettings>('less');
 
 	const serverOptions: ServerOptions = {
 		run: {
@@ -38,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 			fileEvents: vscode.workspace.createFileSystemWatcher('**/*.less')
 		},
 		initializationOptions: {
-			settings: vscode.workspace.getConfiguration('less'),
+			settings,
 			activeEditorUri: activeEditor ? activeEditor.document.uri.toString() : null
 		}
 	};
@@ -53,7 +57,13 @@ export function activate(context: vscode.ExtensionContext) {
 			uri = event.document.uri.toString();
 		}
 
-		client.sendRequest('changeActiveDocument', { uri });
+		// We must absorb any errors
+		client.sendRequest('changeActiveDocument', { uri }).then(() => null, (err) => {
+			if (settings.showErrors) {
+				console.log(`[vscode-less]: ${err.name}`);
+				console.log(`[vscode-less]: ${err.toString()}`);
+			}
+		});
 	});
 
 	context.subscriptions.push(...disposable);

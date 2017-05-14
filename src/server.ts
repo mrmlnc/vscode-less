@@ -67,6 +67,8 @@ connection.onInitialize((params: InitializeParams): Promise<InitializeResult> =>
 	}).catch((err) => {
 		if (settings.showErrors) {
 			connection.window.showErrorMessage(err);
+			console.log(`[vscode-less]: ${err.name}`);
+			console.log(`[vscode-less]: ${err.toString()}`);
 		}
 	});
 });
@@ -117,7 +119,15 @@ connection.onSignatureHelp((textDocumentPosition) => {
 connection.onDefinition((textDocumentPosition) => {
 	const document = documents.get(textDocumentPosition.textDocument.uri);
 	const offset = document.offsetAt(textDocumentPosition.position);
-	return goDefinition(document, offset, cache, settings);
+
+	return goDefinition(document, offset, cache, settings).catch((err) => {
+		if (settings.showErrors) {
+			connection.window.showErrorMessage(err);
+			console.log(`[vscode-less]: ${err.name}`);
+			console.log(`[vscode-less]: ${err.toString()}`);
+		}
+		return null;
+	});
 });
 
 connection.onWorkspaceSymbol((workspaceSymbolParams) => {

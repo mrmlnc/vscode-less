@@ -177,7 +177,7 @@ export function doScanner(root: string, cache: ICache, settings: ISettings): Pro
 				}
 			}
 
-			return resolve(projectSymbols.concat(importedSymbols));
+			resolve(projectSymbols.concat(importedSymbols));
 		});
 	});
 }
