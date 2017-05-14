@@ -11,7 +11,10 @@
   },
   "icon": "icon.png",
   "homepage": "https://github.com/mrmlnc/vscode-less/blob/master/README.md",
-  "repository": "mrmlnc/vscode-less",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrmlnc/vscode-less"
+  },
   "keywords": [
     "less",
     "autocompletion",
