@@ -85,6 +85,10 @@ connection.onDidChangeWatchedFiles((event) => {
 
 	return doScanner(workspaceRoot, cache, settings).then((symbols) => {
 		return invalidateCacheStorage(cache, symbols);
+	}).catch((err) => {
+		if (settings.showErrors) {
+			connection.window.showErrorMessage(err);
+		}
 	});
 });
 
